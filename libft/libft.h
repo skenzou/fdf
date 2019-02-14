@@ -6,7 +6,7 @@
 /*   By: midrissi <midrissi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/04 13:56:36 by midrissi          #+#    #+#             */
-/*   Updated: 2019/02/13 07:33:41 by midrissi         ###   ########.fr       */
+/*   Updated: 2019/02/14 06:45:12 by midrissi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,9 @@ void			ft_lstdel(t_list **alst, void (*del)(void *, size_t));
 void			ft_lstiter(t_list *lst, void (*f)(t_list *elem));
 t_list			*ft_lstmap(t_list *lst, t_list *(*f)(t_list *elem));
 void			ft_lstadd(t_list **alst, t_list *new);
-void			ft_lstpushback(t_list **begin, t_list *new);
+int				ft_lstpushback(t_list **begin, t_list *new);
+void			ft_lstrev(t_list **alst);
+void			ft_lstdestroy(t_list **lst);
+
 
 #endif

@@ -6,18 +6,18 @@
 /*   By: midrissi <midrissi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/13 07:10:27 by midrissi          #+#    #+#             */
-/*   Updated: 2019/02/13 07:21:13 by midrissi         ###   ########.fr       */
+/*   Updated: 2019/02/14 04:14:33 by midrissi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-void		ft_lstpushback(t_list **begin, t_list *new)
+int		ft_lstpushback(t_list **begin, t_list *new)
 {
 	t_list *lst;
 
 	if (!begin || !new)
-		return ;
+		return (0);
 	lst = *begin;
 	if (lst)
 	{
@@ -27,4 +27,5 @@ void		ft_lstpushback(t_list **begin, t_list *new)
 	}
 	else
 		*begin = new;
+	return (1);
 }

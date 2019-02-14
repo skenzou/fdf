@@ -1,22 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_lstadd.c                                        :+:      :+:    :+:   */
+/*   ft_lstdestroy.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: midrissi <midrissi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/10/09 10:41:36 by midrissi          #+#    #+#             */
-/*   Updated: 2019/02/14 04:53:02 by midrissi         ###   ########.fr       */
+/*   Created: 2019/02/14 06:29:17 by midrissi          #+#    #+#             */
+/*   Updated: 2019/02/14 06:45:40 by midrissi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-void	ft_lstadd(t_list **alst, t_list *new)
+void		ft_lstdestroy(t_list **lst)
 {
-	if (new && alst)
+	t_list *save;
+
+	while (*lst)
 	{
-		new->next = *alst;
-		*alst = new;
+		save = *lst;
+		*lst = (*lst)->next;
+		ft_memdel(&(save->content));
+		ft_memdel((void **)&save);
 	}
 }
