@@ -6,7 +6,7 @@
 #    By: midrissi <midrissi@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/10/09 12:43:35 by midrissi          #+#    #+#              #
-#    Updated: 2019/02/14 06:30:43 by midrissi         ###   ########.fr        #
+#    Updated: 2019/02/15 01:11:41 by midrissi         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,7 +22,8 @@ ft_strjoin.c ft_strlcat.c ft_strlen.c ft_strmap.c ft_strtrim.c ft_strsplit.c \
 ft_strstr.c ft_strsub.c ft_toupper.c ft_strmapi.c ft_strncat.c ft_strncmp.c \
 ft_strncpy.c ft_strnequ.c ft_strnew.c ft_strnstr.c ft_strrchr.c ft_tolower.c \
 get_next_line.c ft_itoa_base.c ft_nputchar.c ft_ftoa.c \
-ft_utoa_base.c ft_count_char.c ft_lstpushback.c ft_lstrev.c ft_lstdestroy.c
+ft_utoa_base.c ft_count_char.c ft_lstpushback.c ft_lstrev.c ft_lstdestroy.c \
+ft_count_words.c
 OBJ = $(SRCS:.c=.o)
 CFLAGS = -Wall -Wextra -Werror -I. -c
 

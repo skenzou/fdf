@@ -6,7 +6,7 @@
 /*   By: midrissi <midrissi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/04 13:56:36 by midrissi          #+#    #+#             */
-/*   Updated: 2019/02/14 06:45:12 by midrissi         ###   ########.fr       */
+/*   Updated: 2019/02/15 01:11:33 by midrissi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,7 @@ char			*ft_ftoa(long double d, int precision);
 char			*ft_utoa_base(uintmax_t nb,
 				unsigned base, int uppercase);
 int				ft_count_char(char c, char *str);
+int				ft_count_words(char const *s, char c);
 typedef struct	s_list
 {
 	void			*content;
@@ -95,7 +96,7 @@ t_list			*ft_lstmap(t_list *lst, t_list *(*f)(t_list *elem));
 void			ft_lstadd(t_list **alst, t_list *new);
 int				ft_lstpushback(t_list **begin, t_list *new);
 void			ft_lstrev(t_list **alst);
-void			ft_lstdestroy(t_list **lst);
+int			ft_lstdestroy(t_list **lst);
 
 
 #endif
