@@ -6,7 +6,7 @@
 /*   By: midrissi <midrissi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/12 23:59:47 by midrissi          #+#    #+#             */
-/*   Updated: 2019/02/15 07:21:53 by midrissi         ###   ########.fr       */
+/*   Updated: 2019/02/15 14:13:41 by midrissi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,26 +42,28 @@ int		main(int argc, char **argv)
 	int ioffset;
 	int joffset;
 	int z;
+	double cte;
 
 	(void)argc;
+	cte = 1;
 	j = 0;
 	mlx = mlx_init();
 	mlx_win = mlx_new_window(mlx, 1000, 1000, "fdf");
 	map = create_map(open(argv[1], O_RDONLY));
 	print_map(map);
-	joffset = 0;
+	joffset = 250;
 	while (j < map->y)
 	{
 		i = 0;
-		ioffset = 0;
+		ioffset = 250;
 		while (i < map->x)
 		{
 			z = map->board[j][i];
-			mlx_pixel_put (mlx, mlx_win, (250 + ((i - z) / sqrt(2)) + ioffset ), 250 + ((i + (2*j) + z) * sqrt(6)) + joffset, 0xFF0000);
+			mlx_pixel_put (mlx, mlx_win, ioffset + i + cte * z, joffset + j + (cte / 2.0) * z, 0xFF0000);
 			i++;
-			ioffset += 10;
+			ioffset += 20;
 		}
-		joffset += 10;
+		joffset += 20;
 		j++;
 	}
 	mlx_loop(mlx);
