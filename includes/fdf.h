@@ -6,7 +6,7 @@
 /*   By: midrissi <midrissi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/13 00:03:00 by midrissi          #+#    #+#             */
-/*   Updated: 2019/02/20 11:10:31 by midrissi         ###   ########.fr       */
+/*   Updated: 2019/02/20 17:50:43 by midrissi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,5 +40,6 @@ typedef struct	s_fdf
 }				t_fdf;
 
 t_map			*create_map(int fd);
+void			draw(t_fdf *fdf);
 
 #endif
