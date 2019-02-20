@@ -6,7 +6,7 @@
 /*   By: midrissi <midrissi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/12 23:59:47 by midrissi          #+#    #+#             */
-/*   Updated: 2019/02/15 14:13:41 by midrissi         ###   ########.fr       */
+/*   Updated: 2019/02/20 15:24:22 by midrissi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,41 +32,235 @@ void	print_map(t_map *map)
 	}
 }
 
+int		handle_key(int keycode, void *param)
+{
+	(void)param;
+	if (keycode == 53)
+		exit(0);
+	printf("You pressed the key number: %d\n", keycode);
+	return (1);
+}
+
+// void		put_line(t_fdf *fdf, int x1, int y1, int x2, int y2)
+// {
+// 	int dx;
+// 	int dy;
+// 	int e;
+// 	e = x2 - x1;
+// 	dx = e * 2;
+// 	dy = (y2 - y1) * 2;
+// 	while (x1 <= x2)
+// 	{
+// 		mlx_pixel_put(fdf->mlx_ptr, fdf->win_ptr, x1 , y1, 0xFF0000);
+// 		x1++;
+// 		if ((e -= dy) <= 0)
+// 		{
+// 			y1++;
+// 			e += dx;
+// 		}
+// 	}
+// }
+
+// procédure tracerSegment(entier x1, entier y1, entier x2, entier y2) est
+//   déclarer entier dx, dy ;
+//   déclarer entier e ; // valeur d’erreur
+//   e  ← x2 - x1 ;        // -e(0,1)
+//   dx ← e × 2 ;          // -e(0,1)
+//   dy ← (y2 - y1) × 2 ;  // e(1,0)
+//   tant que x1 ≤ x2 faire
+//     tracerPixel(x1, y1) ;
+//     x1 ← x1 + 1 ;  // colonne du pixel suivant
+//     si (e ← e - dy) ≤ 0 alors  // erreur pour le pixel suivant de même rangée
+//       y1 ← y1 + 1 ;  // choisir plutôt le pixel suivant dans la rangée supérieure
+//       e ← e + dx ;  // ajuste l’erreur commise dans cette nouvelle rangée
+//     fin si ;
+//   fin faire ;
+//   // Le pixel final (x2, y2) n’est pas tracé.
+// fin procédure ;
+void    put_line(t_fdf *fdf, int x1, int y1, int x2,int y2)
+{
+    int		i;
+    int		dx;
+	int		dy;
+    int		var;
+
+	x2 = x2 - x1;
+	y2 = y2 - y1;
+	dx = x2 > 0 ? 1 : -1;
+	dy = y2 > 0 ? 1 : -1;
+	x2 = ABS(x2);
+	y2 = ABS(y2);
+    mlx_pixel_put(fdf->mlx_ptr,fdf->win_ptr, x1, y1, 0xFF0000) && (i = 1);
+    var = (x2 > y2 ? x2 : y2) / 2;
+    if (x2 > y2)
+        while (i++ <= x2 && (x1 += dx) && (var += y2))
+        {
+			(var >= x2) && (y1 += dy);
+            (var >= x2) && (var -= x2);
+            mlx_pixel_put(fdf->mlx_ptr, fdf->win_ptr, x1, y1, 0xFF0000);
+        }
+    else
+        while (i++ <= y2 && (y1 += dy) && (var += x2))
+        {
+            (var >= y2) && (x1 += dx);
+            (var >= y2) && (var -= y2);
+            mlx_pixel_put(fdf->mlx_ptr, fdf->win_ptr, x1, y1, 0xFF0000);
+        }
+}
+// void    ligne(t_mlx m, t_point o, t_point f, int color)
+// {
+//     int        i;
+//     t_point    inc;
+//     int        var;
+//
+//     f = (t_point){.x = f.x - o.x, .y = f.y - o.y};
+//     inc = (t_point){.x = (f.x > 0) ? 1 : -1, .y = (f.y > 0) ? 1 : -1};
+//     f = (t_point){.x = abs(f.x), .y = abs(f.y)};
+//     p(m, o, color) && (i = 1);
+//     var = ft_round((f.x > f.y ? f.x : f.y) / 2, 0);
+//     if (f.x > f.y)
+//         while (i++ <= f.x && (o.x += inc.x) && (var += f.y))
+//         {
+//             (var >= f.x) && (var -= f.x);
+//             (var >= f.x) && (o.y += inc.y);
+//             p(m, o, color);
+//         }
+//     else
+//         while (i++ <= f.y && (o.y += inc.y) && (var += f.x))
+//         {
+//             (var >= f.y) && (o.x += inc.x);
+//             (var >= f.y) && (var -= f.y);
+//             p(m, o, color);
+//         }
+// }
+
 int		main(int argc, char **argv)
 {
-	t_map	*map;
-	void	*mlx;
-	void	*mlx_win;
+	t_fdf	*fdf;
 	int i;
 	int j;
+	// int x;
+	// int y;
 	int ioffset;
 	int joffset;
 	int z;
-	double cte;
+	double cte1;
+	double cte2;
+	int x2;
+	int y2;
+	int x;
+	int y;
+	//int z;
 
 	(void)argc;
-	cte = 1;
+	fdf = (t_fdf *)malloc(sizeof(t_fdf));
+	fdf->mlx_ptr = mlx_init();
+	fdf->win_ptr = mlx_new_window(fdf->mlx_ptr, 5000, 5000, "fdf");
+	fdf->map = create_map(open(argv[1], O_RDONLY));
+	print_map(fdf->map);
+	joffset = 20;
+	ioffset = 20;
+	mlx_key_hook(fdf->win_ptr, &handle_key, fdf);
+	//put_line(fdf, 0 + 250, 0 + 250, -100 + 250, 100 + 250);
+	// put_line(fdf, 0 + 250, 0 + 250, 10 + 250, 10 + 250);
+	cte1 = 0.5;
+	cte2 = 0.7;
 	j = 0;
-	mlx = mlx_init();
-	mlx_win = mlx_new_window(mlx, 1000, 1000, "fdf");
-	map = create_map(open(argv[1], O_RDONLY));
-	print_map(map);
-	joffset = 250;
-	while (j < map->y)
+	while (j < fdf->map->y)
 	{
 		i = 0;
-		ioffset = 250;
-		while (i < map->x)
+		x = 950 + (i * 20);
+		y = 200 + (j * 20);
+		z = fdf->map->board[j][i];
+
+		x = 950 + (cte1 * x - cte2 * y);
+		y = 200 + (-z + (cte1 / 2.0) * x + (cte2 / 2.0) * y);
+		i++;
+		while (i < fdf->map->x)
 		{
-			z = map->board[j][i];
-			mlx_pixel_put (mlx, mlx_win, ioffset + i + cte * z, joffset + j + (cte / 2.0) * z, 0xFF0000);
+			x2 = 950 + (i * 20);
+			y2 = 200 + (j * 20);
+			z = fdf->map->board[j][i];
+
+			x2 = 950 + (cte1 * x2 - cte2 * y2);
+			y2 = 200 + (-z + (cte1 / 2.0) * x2 + (cte2 / 2.0) * y2);
+			put_line(fdf, x, y, x2, y2);
+			x = x2;
+			y = y2;
 			i++;
-			ioffset += 20;
 		}
-		joffset += 20;
 		j++;
 	}
-	mlx_loop(mlx);
+	i = 0;
+	while (i < fdf->map->x)
+	{
+		j = 0;
+		x = 950 + (i * 20);
+		y = 200 + (j * 20);
+		z = fdf->map->board[j][i];
+
+		x = 950 + (cte1 * x - cte2 * y);
+		y = 200 + (-z + (cte1 / 2.0) * x + (cte2 / 2.0) * y);
+
+		j++;
+		while (j < fdf->map->y)
+		{
+			x2 = 950 + (i * 20);
+			y2 = 200 + (j * 20);
+			z = fdf->map->board[j][i];
+
+			x2 = 950 + (cte1 * x2 - cte2 * y2);
+			y2 = 200 + (-z + (cte1 / 2.0) * x2 + (cte2 / 2.0) * y2);
+			put_line(fdf, x, y, x2, y2);
+			x = x2;
+			y = y2;
+			j++;
+		}
+		i++;
+	}
+	// while (j < fdf->map->y)
+	// {
+	// 	i = 0;
+	// 	ioffset = 250;
+	// 	z = fdf->map->board[j][i];
+	// 	x = ioffset + i + cte * z;
+	// 	y = joffset + j + (cte / 2.0) * z;
+	// 	i++;
+	// 	while (i < fdf->map->x)
+	// 	{
+	// 		z = fdf->map->board[j][i];
+	// 		put_line(fdf,x , y, ioffset + i + cte * z, joffset + j + (cte / 2.0) * z);
+	// 		x = ioffset + i + cte * z;
+	// 		y = joffset + j + (cte / 2.0) * z;
+	// 		i++;
+	// 		ioffset += 20;
+	// 	}
+	// 	joffset += 20;
+	// 	j++;
+	// }
+	// i = 0;
+	// ioffset = 250;
+	// while (i < fdf->map->x)
+	// {
+	// 	j = 0;
+	// 	joffset = 250;
+	// 	z = fdf->map->board[j][i];
+	// 	x = ioffset + i + cte * z;
+	// 	y = joffset + j + (cte / 2.0) * z;
+	// 	j++;
+	// 	while (j < fdf->map->y)
+	// 	{
+	// 		z = fdf->map->board[j][i];
+	// 		put_line(fdf,x , y, ioffset + i + cte * z, joffset + j + (cte / 2.0) * z);
+	// 		x = ioffset + i + cte * z;
+	// 		y = joffset + j + (cte / 2.0) * z;
+	// 		j++;
+	// 		joffset += 20;
+	// 	}
+	// 	ioffset += 20;
+	// 	i++;
+	// }
+	mlx_loop(fdf->mlx_ptr);
 	return (0);
 }
 

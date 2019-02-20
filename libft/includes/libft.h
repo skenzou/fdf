@@ -6,7 +6,7 @@
 /*   By: midrissi <midrissi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/04 13:56:36 by midrissi          #+#    #+#             */
-/*   Updated: 2019/02/15 01:11:33 by midrissi         ###   ########.fr       */
+/*   Updated: 2019/02/20 06:19:13 by midrissi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,15 @@
 # include <stdlib.h>
 # include <string.h>
 # include <limits.h>
+# include <stdarg.h>
+# define CONV "diouxXcspfDOUb%"
+# define H 1
+# define HH	2
+# define L	3
+# define LL	4
+# define LU	5
+# define Z	6
+# define J  7
 # define ABS(x) ((x < 0) ? -x : x)
 # define BUFF_SIZE 32
 # define FD_MAX OPEN_MAX
@@ -82,12 +91,14 @@ char			*ft_utoa_base(uintmax_t nb,
 				unsigned base, int uppercase);
 int				ft_count_char(char c, char *str);
 int				ft_count_words(char const *s, char c);
+
 typedef struct	s_list
 {
 	void			*content;
 	size_t			content_size;
 	struct s_list	*next;
 }				t_list;
+
 t_list			*ft_lstnew(void const *content, size_t content_size);
 void			ft_lstdelone(t_list **alst, void (*del)(void *, size_t));
 void			ft_lstdel(t_list **alst, void (*del)(void *, size_t));
@@ -96,7 +107,37 @@ t_list			*ft_lstmap(t_list *lst, t_list *(*f)(t_list *elem));
 void			ft_lstadd(t_list **alst, t_list *new);
 int				ft_lstpushback(t_list **begin, t_list *new);
 void			ft_lstrev(t_list **alst);
-int			ft_lstdestroy(t_list **lst);
+int				ft_lstdestroy(t_list **lst);
 
+typedef struct	s_format
+{
+	char			conversion;
+	int				width;
+	int				precision;
+	short			modifier;
+	char			signe;
+	char			minus;
+	char			zero;
+	char			prefixe;
+	int				base;
+	int				(*handler)(struct s_format *fmt, va_list ap);
+}				t_format;
+
+int				ft_printf(const char *restrict format, ...);
+t_format		*create_format(char *str, va_list ap);
+int				parse_format(char *str, va_list ap);
+int				check_conversion(char **str);
+void			set_conversion(char *str, t_format *fmt);
+int				get_modifier(char *str, t_format *fmt);
+int				get_precision(char *str, t_format *fmt, va_list ap);
+int				get_width(char *str, va_list ap, t_format *fmt);
+void			set_flags(char *str, t_format *fmt);
+int				handle_char(t_format *fmt, va_list ap);
+int				handle_numbers(t_format *fmt, va_list ap);
+int				handle_str(t_format *fmt, va_list ap);
+intmax_t		get_signed(t_format *fmt, va_list ap);
+uintmax_t		get_unsigned(t_format *fmt, va_list ap);
+int				print_numbers(t_format *fmt, char *str, int len);
+char			*get_string(t_format *fmt, va_list ap);
 
 #endif
