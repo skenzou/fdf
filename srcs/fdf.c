@@ -6,7 +6,7 @@
 /*   By: midrissi <midrissi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/12 23:59:47 by midrissi          #+#    #+#             */
-/*   Updated: 2019/02/20 17:57:30 by midrissi         ###   ########.fr       */
+/*   Updated: 2019/02/20 19:19:48 by midrissi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@ static int g_xoffset;
 static int g_yoffset;
 static double g_iso_cte1;
 static double g_iso_cte2;
+static int zoom;
+static int altitude;
 
 void	print_map(t_map *map)
 {
@@ -64,6 +66,20 @@ int		handle_key(int keycode, void *param)
 	if (keycode == 126)
 	{
 		g_yoffset -= 30;
+		mlx_clear_window(fdf->mlx_ptr, fdf->win_ptr);
+		draw(fdf);
+	}
+	if (keycode == 13)
+	{
+		zoom += 5;
+		altitude +=1;
+		mlx_clear_window(fdf->mlx_ptr, fdf->win_ptr);
+		draw(fdf);
+	}
+	if (keycode == 1)
+	{
+		zoom -= 5;
+		altitude -= 1;
 		mlx_clear_window(fdf->mlx_ptr, fdf->win_ptr);
 		draw(fdf);
 	}
@@ -116,18 +132,18 @@ void		draw(t_fdf *fdf)
 	while (j < fdf->map->y)
 	{
 		i = 0;
-		x = g_xoffset + (i * 20);
-		y = g_yoffset + (j * 20);
-		z = fdf->map->board[j][i];
+		x = g_xoffset + (i * zoom);
+		y = g_yoffset + (j * zoom);
+		z = fdf->map->board[j][i] * altitude;
 
 		x = g_xoffset + (g_iso_cte1 * x - g_iso_cte2 * y);
 		y = g_yoffset + (-z + (g_iso_cte1 / 2.0) * x + (g_iso_cte2 / 2.0) * y);
 		i++;
 		while (i < fdf->map->x)
 		{
-			x2 = g_xoffset + (i * 20);
-			y2 = g_yoffset + (j * 20);
-			z = fdf->map->board[j][i];
+			x2 = g_xoffset + (i * zoom);
+			y2 = g_yoffset + (j * zoom);
+			z = fdf->map->board[j][i] * altitude;
 
 			x2 = g_xoffset + (g_iso_cte1 * x2 - g_iso_cte2 * y2);
 			y2 = g_yoffset + (-z + (g_iso_cte1 / 2.0) * x2 + (g_iso_cte2 / 2.0) * y2);
@@ -142,9 +158,9 @@ void		draw(t_fdf *fdf)
 	while (i < fdf->map->x)
 	{
 		j = 0;
-		x = g_xoffset + (i * 20);
-		y = g_yoffset + (j * 20);
-		z = fdf->map->board[j][i];
+		x = g_xoffset + (i * zoom);
+		y = g_yoffset + (j * zoom);
+		z = fdf->map->board[j][i] * altitude;
 
 		x = g_xoffset + (g_iso_cte1 * x - g_iso_cte2 * y);
 		y = g_yoffset + (-z + (g_iso_cte1 / 2.0) * x + (g_iso_cte2 / 2.0) * y);
@@ -152,9 +168,9 @@ void		draw(t_fdf *fdf)
 		j++;
 		while (j < fdf->map->y)
 		{
-			x2 = g_xoffset + (i * 20);
-			y2 = g_yoffset + (j * 20);
-			z = fdf->map->board[j][i];
+			x2 = g_xoffset + (i * zoom);
+			y2 = g_yoffset + (j * zoom);
+			z = fdf->map->board[j][i] * altitude;
 
 			x2 = g_xoffset + (g_iso_cte1 * x2 - g_iso_cte2 * y2);
 			y2 = g_yoffset + (-z + (g_iso_cte1 / 2.0) * x2 + (g_iso_cte2 / 2.0) * y2);
@@ -183,6 +199,8 @@ int		main(int argc, char **argv)
 	mlx_key_hook(fdf->win_ptr, &handle_key, fdf);
 	g_iso_cte1 = 0.5;
 	g_iso_cte2 = 0.7;
+	zoom = 19;
+	altitude = 1;
 	draw(fdf);
 	mlx_loop(fdf->mlx_ptr);
 	return (0);
