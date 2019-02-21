@@ -6,7 +6,7 @@
 /*   By: midrissi <midrissi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/12 23:59:47 by midrissi          #+#    #+#             */
-/*   Updated: 2019/02/20 19:19:48 by midrissi         ###   ########.fr       */
+/*   Updated: 2019/02/21 10:54:24 by midrissi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,54 +45,29 @@ int		handle_key(int keycode, void *param)
 	fdf = (t_fdf *)param;
 	if (keycode == 53)
 		exit(0);
-	if (keycode == 124)
-	{
-		g_xoffset += 30;
-		mlx_clear_window(fdf->mlx_ptr, fdf->win_ptr);
-		draw(fdf);
-	}
-	if (keycode == 123)
-	{
-		g_xoffset -= 30;
-		mlx_clear_window(fdf->mlx_ptr, fdf->win_ptr);
-		draw(fdf);
-	}
-	if (keycode == 125)
-	{
-		g_yoffset += 30;
-		mlx_clear_window(fdf->mlx_ptr, fdf->win_ptr);
-		draw(fdf);
-	}
-	if (keycode == 126)
-	{
-		g_yoffset -= 30;
-		mlx_clear_window(fdf->mlx_ptr, fdf->win_ptr);
-		draw(fdf);
-	}
-	if (keycode == 13)
-	{
-		zoom += 5;
-		altitude +=1;
-		mlx_clear_window(fdf->mlx_ptr, fdf->win_ptr);
-		draw(fdf);
-	}
-	if (keycode == 1)
-	{
-		zoom -= 5;
-		altitude -= 1;
-		mlx_clear_window(fdf->mlx_ptr, fdf->win_ptr);
-		draw(fdf);
-	}
+	g_xoffset = keycode == 124 ? g_xoffset + 30 : g_xoffset;
+	g_xoffset = keycode == 123 ? g_xoffset - 30 : g_xoffset;
+	g_yoffset = keycode == 125 ? g_yoffset + 30 : g_yoffset;
+	g_yoffset = keycode == 126 ? g_yoffset - 30 : g_yoffset;
+	zoom = keycode == 69 ? zoom + 3 : zoom;
+	zoom = keycode == 78 ? zoom - 3 : zoom;
+	altitude = keycode == 13 ? altitude + 1 : altitude;
+	altitude = keycode == 1 ? altitude - 1 : altitude;
+	mlx_clear_window(fdf->mlx_ptr, fdf->win_ptr);
+	mlx_destroy_image(fdf->mlx_ptr, fdf->img->ptr);
+	create_image(fdf);
+	draw(fdf);
+	mlx_put_image_to_window(fdf->mlx_ptr, fdf->win_ptr, fdf->img->ptr, 0, 0);
 	printf("You pressed the key number: %d\n", keycode);
 	return (1);
 }
 
-void    put_line(t_fdf *fdf, int x1, int y1, int x2,int y2)
+void	put_line(t_fdf *fdf, int x1, int y1, int x2,int y2)
 {
-    int		i;
-    int		dx;
+	int		i;
+	int		dx;
 	int		dy;
-    int		var;
+	int		var;
 
 	x2 = x2 - x1;
 	y2 = y2 - y1;
@@ -100,22 +75,36 @@ void    put_line(t_fdf *fdf, int x1, int y1, int x2,int y2)
 	dy = y2 > 0 ? 1 : -1;
 	x2 = ABS(x2);
 	y2 = ABS(y2);
-    mlx_pixel_put(fdf->mlx_ptr,fdf->win_ptr, x1, y1, 0xFF0000) && (i = 1);
-    var = (x2 > y2 ? x2 : y2) / 2;
-    if (x2 > y2)
-        while (i++ <= x2 && (x1 += dx) && (var += y2))
-        {
+	if (x1 < WIN_WIDTH && x1 > 0 && y1 < WIN_HEIGHT && y1 > 0)
+		*(int *)(fdf->img->data + ((x1 + y1 * WIN_WIDTH) * fdf->img->bpp)) = mlx_get_color_value(fdf->mlx_ptr, 0xFF0000);
+	i = 1;
+	var = (x2 > y2 ? x2 : y2) / 2;
+	if (x2 > y2)
+		while (i++ <= x2 && (x1 += dx) && (var += y2))
+		{
 			(var >= x2) && (y1 += dy);
-            (var >= x2) && (var -= x2);
-            mlx_pixel_put(fdf->mlx_ptr, fdf->win_ptr, x1, y1, 0xFF0000);
-        }
-    else
-        while (i++ <= y2 && (y1 += dy) && (var += x2))
-        {
-            (var >= y2) && (x1 += dx);
-            (var >= y2) && (var -= y2);
-            mlx_pixel_put(fdf->mlx_ptr, fdf->win_ptr, x1, y1, 0xFF0000);
-        }
+			(var >= x2) && (var -= x2);
+			if (x1 < WIN_WIDTH && x1 > 0 && y1 < WIN_HEIGHT && y1 > 0)
+			*(int *)(fdf->img->data + ((x1 + y1 * WIN_WIDTH) * fdf->img->bpp)) = mlx_get_color_value(fdf->mlx_ptr, 0xFF0000);
+		}
+	else
+		while (i++ <= y2 && (y1 += dy) && (var += x2))
+		{
+			(var >= y2) && (x1 += dx);
+			(var >= y2) && (var -= y2);
+			if (x1 < WIN_WIDTH && x1 > 0 && y1 < WIN_HEIGHT && y1 > 0)
+			*(int *)(fdf->img->data + ((x1 + y1 * WIN_WIDTH) * fdf->img->bpp)) = mlx_get_color_value(fdf->mlx_ptr, 0xFF0000);
+		}
+}
+
+void	create_image(t_fdf *fdf)
+{
+	if (!(fdf->img = (t_image *)malloc(sizeof(t_image))))
+		exit(1);
+	fdf->img->ptr = mlx_new_image(fdf->mlx_ptr, WIN_WIDTH, WIN_HEIGHT);
+	fdf->img->data = mlx_get_data_addr(fdf->img->ptr,
+			&fdf->img->bpp, &fdf->img->sizeline, &fdf->img->endian);
+	fdf->img->bpp /= 8;
 }
 
 void		draw(t_fdf *fdf)
@@ -187,11 +176,10 @@ int		main(int argc, char **argv)
 {
 	t_fdf	*fdf;
 
-
 	(void)argc;
 	fdf = (t_fdf *)malloc(sizeof(t_fdf));
 	fdf->mlx_ptr = mlx_init();
-	fdf->win_ptr = mlx_new_window(fdf->mlx_ptr, 1000, 1000, "fdf");
+	fdf->win_ptr = mlx_new_window(fdf->mlx_ptr, WIN_WIDTH, WIN_HEIGHT, "fdf");
 	fdf->map = create_map(open(argv[1], O_RDONLY));
 	print_map(fdf->map);
 	g_xoffset = 200;
@@ -201,7 +189,9 @@ int		main(int argc, char **argv)
 	g_iso_cte2 = 0.7;
 	zoom = 19;
 	altitude = 1;
+	create_image(fdf);
 	draw(fdf);
+	mlx_put_image_to_window(fdf->mlx_ptr, fdf->win_ptr, fdf->img->ptr, 0 , 0);
 	mlx_loop(fdf->mlx_ptr);
 	return (0);
 }

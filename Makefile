@@ -6,7 +6,7 @@
 #    By: midrissi <midrissi@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/01/29 10:58:01 by midrissi          #+#    #+#              #
-#    Updated: 2019/02/15 06:26:26 by midrissi         ###   ########.fr        #
+#    Updated: 2019/02/21 06:44:44 by midrissi         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,7 +31,7 @@ $(NAME): $(OBJDIR)
 
 $(OBJDIR): $(SRCS)
 	@gcc $(CFLAGS) -c $(SRCS) $(MLX_INC)
-	@mkdir $(OBJDIR)
+	@mkdir -p $(OBJDIR)
 	@mv $(notdir $(OBJ)) $(OBJDIR)
 
 
