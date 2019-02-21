@@ -6,18 +6,12 @@
 /*   By: midrissi <midrissi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/12 23:59:47 by midrissi          #+#    #+#             */
-/*   Updated: 2019/02/21 10:54:24 by midrissi         ###   ########.fr       */
+/*   Updated: 2019/02/21 12:15:52 by midrissi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fdf.h"
 #include <stdio.h>
-static int g_xoffset;
-static int g_yoffset;
-static double g_iso_cte1;
-static double g_iso_cte2;
-static int zoom;
-static int altitude;
 
 void	print_map(t_map *map)
 {
@@ -45,14 +39,14 @@ int		handle_key(int keycode, void *param)
 	fdf = (t_fdf *)param;
 	if (keycode == 53)
 		exit(0);
-	g_xoffset = keycode == 124 ? g_xoffset + 30 : g_xoffset;
-	g_xoffset = keycode == 123 ? g_xoffset - 30 : g_xoffset;
-	g_yoffset = keycode == 125 ? g_yoffset + 30 : g_yoffset;
-	g_yoffset = keycode == 126 ? g_yoffset - 30 : g_yoffset;
-	zoom = keycode == 69 ? zoom + 3 : zoom;
-	zoom = keycode == 78 ? zoom - 3 : zoom;
-	altitude = keycode == 13 ? altitude + 1 : altitude;
-	altitude = keycode == 1 ? altitude - 1 : altitude;
+	fdf->xoffset = keycode == 124 ? fdf->xoffset + 30 : fdf->xoffset;
+	fdf->xoffset = keycode == 123 ? fdf->xoffset - 30 : fdf->xoffset;
+	fdf->yoffset = keycode == 125 ? fdf->yoffset + 30 : fdf->yoffset;
+	fdf->yoffset = keycode == 126 ? fdf->yoffset - 30 : fdf->yoffset;
+	fdf->zoom = keycode == 69 ? fdf->zoom + 3 : fdf->zoom;
+	fdf->zoom = keycode == 78 ? fdf->zoom - 3 : fdf->zoom;
+	fdf->altitude = keycode == 13 ? fdf->altitude + 1 : fdf->altitude;
+	fdf->altitude = keycode == 1 ? fdf->altitude - 1 : fdf->altitude;
 	mlx_clear_window(fdf->mlx_ptr, fdf->win_ptr);
 	mlx_destroy_image(fdf->mlx_ptr, fdf->img->ptr);
 	create_image(fdf);
@@ -76,7 +70,7 @@ void	put_line(t_fdf *fdf, int x1, int y1, int x2,int y2)
 	x2 = ABS(x2);
 	y2 = ABS(y2);
 	if (x1 < WIN_WIDTH && x1 > 0 && y1 < WIN_HEIGHT && y1 > 0)
-		*(int *)(fdf->img->data + ((x1 + y1 * WIN_WIDTH) * fdf->img->bpp)) = mlx_get_color_value(fdf->mlx_ptr, 0xFF0000);
+	*(int *)(fdf->img->data + ((x1 + y1 * WIN_WIDTH) * fdf->img->bpp)) = mlx_get_color_value(fdf->mlx_ptr, 0xFF0000);
 	i = 1;
 	var = (x2 > y2 ? x2 : y2) / 2;
 	if (x2 > y2)
@@ -100,75 +94,124 @@ void	put_line(t_fdf *fdf, int x1, int y1, int x2,int y2)
 void	create_image(t_fdf *fdf)
 {
 	if (!(fdf->img = (t_image *)malloc(sizeof(t_image))))
-		exit(1);
+		exit (1);
 	fdf->img->ptr = mlx_new_image(fdf->mlx_ptr, WIN_WIDTH, WIN_HEIGHT);
 	fdf->img->data = mlx_get_data_addr(fdf->img->ptr,
 			&fdf->img->bpp, &fdf->img->sizeline, &fdf->img->endian);
 	fdf->img->bpp /= 8;
 }
 
+// void		draw(t_fdf *fdf)
+// {
+// 	int i;
+// 	int x2;
+// 	int y2;
+// 	int j;
+// 	int z;
+// 	int x;
+// 	int y;
+// 	double cte1;
+// 	double cte2;
+//
+// 	j = 0;
+// 	cte2 = 0.7;
+// 	cte1 = 0.5;
+// 	while (j < fdf->map->y)
+// 	{
+// 		i = 0;
+// 		x = fdf->xoffset + (i * fdf->zoom);
+// 		y = fdf->yoffset + (j * fdf->zoom);
+// 		z = fdf->map->board[j][i] * fdf->altitude;
+//
+// 		x = fdf->xoffset + (cte1 * x - cte2 * y);
+// 		y = fdf->yoffset + (-z + (cte1 / 2.0) * x + (cte2 / 2.0) * y);
+// 		i++;
+// 		while (i < fdf->map->x)
+// 		{
+// 			x2 = fdf->xoffset + (i * fdf->zoom);
+// 			y2 = fdf->yoffset + (j * fdf->zoom);
+// 			z = fdf->map->board[j][i] * fdf->altitude;
+//
+// 			x2 = fdf->xoffset + (cte1 * x2 - cte2 * y2);
+// 			y2 = fdf->yoffset + (-z + (cte1 / 2.0) * x2 + (cte2 / 2.0) * y2);
+// 			put_line(fdf, x, y, x2, y2);
+// 			x = x2;
+// 			y = y2;
+// 			i++;
+// 		}
+// 		j++;
+// 	}
+// 	i = 0;
+// 	while (i < fdf->map->x)
+// 	{
+// 		j = 0;
+// 		x = fdf->xoffset + (i * fdf->zoom);
+// 		y = fdf->yoffset + (j * fdf->zoom);
+// 		z = fdf->map->board[j][i] * fdf->altitude;
+//
+// 		x = fdf->xoffset + (cte1 * x - cte2 * y);
+// 		y = fdf->yoffset + (-z + (cte1 / 2.0) * x + (cte2 / 2.0) * y);
+//
+// 		j++;
+// 		while (j < fdf->map->y)
+// 		{
+// 			x2 = fdf->xoffset + (i * fdf->zoom);
+// 			y2 = fdf->yoffset + (j * fdf->zoom);
+// 			z = fdf->map->board[j][i] * fdf->altitude;
+//
+// 			x2 = fdf->xoffset + (cte1 * x2 - cte2 * y2);
+// 			y2 = fdf->yoffset + (-z + (cte1 / 2.0) * x2 + (cte2 / 2.0) * y2);
+// 			put_line(fdf, x, y, x2, y2);
+// 			x = x2;
+// 			y = y2;
+// 			j++;
+// 		}
+// 		i++;
+// 	}
+// }
+
+void	rasterise_iso(t_fdf *fdf, int *x, int *y, int z)
+{
+	double cte1;
+	double cte2;
+
+	cte1 = 0.5;
+	cte2 = 0.9;
+	*x = fdf->xoffset + ((*x) * fdf->zoom);
+	*y = fdf->yoffset + ((*y) * fdf->zoom);
+	z = z * fdf->altitude;
+	*x = fdf->xoffset + (cte1 * (*x) - cte2 * (*y));
+	*y = fdf->yoffset + (-z + (cte1 / 2.0) * (*x) + (cte2 / 2.0) * (*y));
+}
 void		draw(t_fdf *fdf)
 {
 	int i;
+	int j;
+	int x1;
+	int y1;
 	int x2;
 	int y2;
-	int j;
-	int z;
-	int x;
-	int y;
 
 	j = 0;
 	while (j < fdf->map->y)
 	{
 		i = 0;
-		x = g_xoffset + (i * zoom);
-		y = g_yoffset + (j * zoom);
-		z = fdf->map->board[j][i] * altitude;
-
-		x = g_xoffset + (g_iso_cte1 * x - g_iso_cte2 * y);
-		y = g_yoffset + (-z + (g_iso_cte1 / 2.0) * x + (g_iso_cte2 / 2.0) * y);
-		i++;
 		while (i < fdf->map->x)
 		{
-			x2 = g_xoffset + (i * zoom);
-			y2 = g_yoffset + (j * zoom);
-			z = fdf->map->board[j][i] * altitude;
-
-			x2 = g_xoffset + (g_iso_cte1 * x2 - g_iso_cte2 * y2);
-			y2 = g_yoffset + (-z + (g_iso_cte1 / 2.0) * x2 + (g_iso_cte2 / 2.0) * y2);
-			put_line(fdf, x, y, x2, y2);
-			x = x2;
-			y = y2;
+			x1 = i;
+			y1 = j;
+			x2 = i == fdf->map->x - 1 ? i : i + 1;
+			y2 = j;
+			rasterise_iso(fdf, &x1, &y1, fdf->map->board[y1][x1]);
+			rasterise_iso(fdf, &x2, &y2, fdf->map->board[y2][x2]);
+			put_line(fdf, x1, y1, x2, y2);
+			x2 = i;
+			y2 = j == fdf->map->y - 1 ? j : j + 1;
+			rasterise_iso(fdf, &x2, &y2, fdf->map->board[y2][x2]);
+			put_line(fdf, x1, y1, x2, y2);
 			i++;
 		}
 		j++;
-	}
-	i = 0;
-	while (i < fdf->map->x)
-	{
-		j = 0;
-		x = g_xoffset + (i * zoom);
-		y = g_yoffset + (j * zoom);
-		z = fdf->map->board[j][i] * altitude;
-
-		x = g_xoffset + (g_iso_cte1 * x - g_iso_cte2 * y);
-		y = g_yoffset + (-z + (g_iso_cte1 / 2.0) * x + (g_iso_cte2 / 2.0) * y);
-
-		j++;
-		while (j < fdf->map->y)
-		{
-			x2 = g_xoffset + (i * zoom);
-			y2 = g_yoffset + (j * zoom);
-			z = fdf->map->board[j][i] * altitude;
-
-			x2 = g_xoffset + (g_iso_cte1 * x2 - g_iso_cte2 * y2);
-			y2 = g_yoffset + (-z + (g_iso_cte1 / 2.0) * x2 + (g_iso_cte2 / 2.0) * y2);
-			put_line(fdf, x, y, x2, y2);
-			x = x2;
-			y = y2;
-			j++;
-		}
-		i++;
 	}
 }
 
@@ -182,13 +225,11 @@ int		main(int argc, char **argv)
 	fdf->win_ptr = mlx_new_window(fdf->mlx_ptr, WIN_WIDTH, WIN_HEIGHT, "fdf");
 	fdf->map = create_map(open(argv[1], O_RDONLY));
 	print_map(fdf->map);
-	g_xoffset = 200;
-	g_yoffset = 100;
+	fdf->xoffset = 200;
+	fdf->yoffset = 100;
 	mlx_key_hook(fdf->win_ptr, &handle_key, fdf);
-	g_iso_cte1 = 0.5;
-	g_iso_cte2 = 0.7;
-	zoom = 19;
-	altitude = 1;
+	fdf->zoom = 19;
+	fdf->altitude = 1;
 	create_image(fdf);
 	draw(fdf);
 	mlx_put_image_to_window(fdf->mlx_ptr, fdf->win_ptr, fdf->img->ptr, 0 , 0);
