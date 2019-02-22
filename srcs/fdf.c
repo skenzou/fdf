@@ -6,7 +6,7 @@
 /*   By: midrissi <midrissi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/12 23:59:47 by midrissi          #+#    #+#             */
-/*   Updated: 2019/02/21 12:15:52 by midrissi         ###   ########.fr       */
+/*   Updated: 2019/02/22 09:25:04 by midrissi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,15 +43,16 @@ int		handle_key(int keycode, void *param)
 	fdf->xoffset = keycode == 123 ? fdf->xoffset - 30 : fdf->xoffset;
 	fdf->yoffset = keycode == 125 ? fdf->yoffset + 30 : fdf->yoffset;
 	fdf->yoffset = keycode == 126 ? fdf->yoffset - 30 : fdf->yoffset;
-	fdf->zoom = keycode == 69 ? fdf->zoom + 3 : fdf->zoom;
-	fdf->zoom = keycode == 78 ? fdf->zoom - 3 : fdf->zoom;
+	fdf->zoom = keycode == 69 ? fdf->zoom + 1 : fdf->zoom;
+	fdf->zoom = keycode == 78 ? fdf->zoom - 1 : fdf->zoom;
+	fdf->zoom = keycode == 18 ? fdf->zoom + 1 : fdf->zoom;
+	fdf->zoom = keycode == 19 ? fdf->zoom - 1 : fdf->zoom;
 	fdf->altitude = keycode == 13 ? fdf->altitude + 1 : fdf->altitude;
 	fdf->altitude = keycode == 1 ? fdf->altitude - 1 : fdf->altitude;
-	mlx_clear_window(fdf->mlx_ptr, fdf->win_ptr);
-	mlx_destroy_image(fdf->mlx_ptr, fdf->img->ptr);
-	create_image(fdf);
-	draw(fdf);
-	mlx_put_image_to_window(fdf->mlx_ptr, fdf->win_ptr, fdf->img->ptr, 0, 0);
+	if (keycode == 12)
+		fdf->rasterise = fdf->rasterise == &rasterise_iso
+										? &rasterise_par : &rasterise_iso;
+	process(fdf);
 	printf("You pressed the key number: %d\n", keycode);
 	return (1);
 }
@@ -100,6 +101,123 @@ void	create_image(t_fdf *fdf)
 			&fdf->img->bpp, &fdf->img->sizeline, &fdf->img->endian);
 	fdf->img->bpp /= 8;
 }
+
+void	rasterise_iso(t_fdf *fdf, int *x, int *y, int z)
+{
+	double cte1;
+	double cte2;
+
+	cte1 = 0.5;
+	cte2 = 0.5;
+	fdf->zoom = fdf->zoom < 0 ? 0 : fdf->zoom;
+	*x = fdf->xoffset + ((*x) * fdf->zoom);
+	*y = fdf->yoffset + ((*y) * fdf->zoom);
+	z = z * fdf->altitude;
+	*x = fdf->xoffset + (cte1 * (*x) - cte2 * (*y));
+	*y = fdf->yoffset + (-z + (cte1 / 2.0) * (*x) + (cte2 / 2.0) * (*y));
+}
+
+void 	rasterise_par(t_fdf *fdf, int *x, int *y, int z)
+{
+	double cte;
+
+	cte = 0.5;
+	fdf->zoom = fdf->zoom < 0 ? 0 : fdf->zoom;
+	*x = fdf->xoffset + ((*x) * fdf->zoom);
+	*y = fdf->yoffset + ((*y) * fdf->zoom);
+	z = z * fdf->altitude;
+	*x = *x + cte * z;
+	*y = *y + (cte / 2.0) * z;
+}
+
+void		draw(t_fdf *fdf)
+{
+	int i;
+	int j;
+	int x1;
+	int y1;
+	int x2;
+	int y2;
+
+	j = -1;
+	while (++j < fdf->map->y && !(i = 0))
+		while (i < fdf->map->x)
+		{
+			x1 = i;
+			y1 = j;
+			x2 = i == fdf->map->x - 1 ? i : i + 1;
+			y2 = j;
+			fdf->rasterise(fdf, &x1, &y1, fdf->map->board[y1][x1]);
+			fdf->rasterise(fdf, &x2, &y2, fdf->map->board[y2][x2]);
+			put_line(fdf, x1, y1, x2, y2);
+			x2 = i;
+			y2 = j == fdf->map->y - 1 ? j : j + 1;
+			fdf->rasterise(fdf, &x2, &y2, fdf->map->board[y2][x2]);
+			put_line(fdf, x1, y1, x2, y2);
+			i++;
+		}
+}
+
+int		scale_zoom(t_fdf *fdf)
+{
+	int zoom;
+
+	zoom = 1;
+	while (fdf->map->x * zoom < WIN_WIDTH)
+		zoom++;
+	return (zoom - 1);
+}
+
+t_fdf			*init_fdf(int fd)
+{
+		t_fdf	*fdf;
+
+		if (!(fdf = (t_fdf *)malloc(sizeof(t_fdf))) || fd == -1)
+			exit(1);
+		fdf->mlx_ptr = mlx_init();
+		fdf->win_ptr = mlx_new_window(fdf->mlx_ptr, WIN_WIDTH, WIN_HEIGHT, "fdf");
+		fdf->map = create_map(fd);
+		if (!fdf->mlx_ptr || !fdf->win_ptr || close(fd))
+			exit(1);
+		fdf->xoffset = 500;
+		fdf->yoffset = 100;
+		mlx_key_hook(fdf->win_ptr, &handle_key, fdf);
+		fdf->zoom = scale_zoom(fdf);
+		fdf->altitude = 1;
+		fdf->rasterise = &rasterise_iso;
+		fdf->img = NULL;
+		return (fdf);
+}
+
+void		process(t_fdf *fdf)
+{
+	mlx_clear_window(fdf->mlx_ptr, fdf->win_ptr);
+	if (fdf->img)
+		mlx_destroy_image(fdf->mlx_ptr, fdf->img->ptr);
+	create_image(fdf);
+	draw(fdf);
+	mlx_put_image_to_window(fdf->mlx_ptr, fdf->win_ptr, fdf->img->ptr, 0 , 0);
+}
+
+int		main(int argc, char **argv)
+{
+	t_fdf	*fdf;
+
+	argc != 2 ? exit(1) : 0;
+	fdf = init_fdf(open(argv[1], O_RDONLY));
+	process(fdf);
+	mlx_loop(fdf->mlx_ptr);
+	return (0);
+}
+
+
+
+
+
+
+
+
+
 
 // void		draw(t_fdf *fdf)
 // {
@@ -169,74 +287,6 @@ void	create_image(t_fdf *fdf)
 // 		i++;
 // 	}
 // }
-
-void	rasterise_iso(t_fdf *fdf, int *x, int *y, int z)
-{
-	double cte1;
-	double cte2;
-
-	cte1 = 0.5;
-	cte2 = 0.9;
-	*x = fdf->xoffset + ((*x) * fdf->zoom);
-	*y = fdf->yoffset + ((*y) * fdf->zoom);
-	z = z * fdf->altitude;
-	*x = fdf->xoffset + (cte1 * (*x) - cte2 * (*y));
-	*y = fdf->yoffset + (-z + (cte1 / 2.0) * (*x) + (cte2 / 2.0) * (*y));
-}
-void		draw(t_fdf *fdf)
-{
-	int i;
-	int j;
-	int x1;
-	int y1;
-	int x2;
-	int y2;
-
-	j = 0;
-	while (j < fdf->map->y)
-	{
-		i = 0;
-		while (i < fdf->map->x)
-		{
-			x1 = i;
-			y1 = j;
-			x2 = i == fdf->map->x - 1 ? i : i + 1;
-			y2 = j;
-			rasterise_iso(fdf, &x1, &y1, fdf->map->board[y1][x1]);
-			rasterise_iso(fdf, &x2, &y2, fdf->map->board[y2][x2]);
-			put_line(fdf, x1, y1, x2, y2);
-			x2 = i;
-			y2 = j == fdf->map->y - 1 ? j : j + 1;
-			rasterise_iso(fdf, &x2, &y2, fdf->map->board[y2][x2]);
-			put_line(fdf, x1, y1, x2, y2);
-			i++;
-		}
-		j++;
-	}
-}
-
-int		main(int argc, char **argv)
-{
-	t_fdf	*fdf;
-
-	(void)argc;
-	fdf = (t_fdf *)malloc(sizeof(t_fdf));
-	fdf->mlx_ptr = mlx_init();
-	fdf->win_ptr = mlx_new_window(fdf->mlx_ptr, WIN_WIDTH, WIN_HEIGHT, "fdf");
-	fdf->map = create_map(open(argv[1], O_RDONLY));
-	print_map(fdf->map);
-	fdf->xoffset = 200;
-	fdf->yoffset = 100;
-	mlx_key_hook(fdf->win_ptr, &handle_key, fdf);
-	fdf->zoom = 19;
-	fdf->altitude = 1;
-	create_image(fdf);
-	draw(fdf);
-	mlx_put_image_to_window(fdf->mlx_ptr, fdf->win_ptr, fdf->img->ptr, 0 , 0);
-	mlx_loop(fdf->mlx_ptr);
-	return (0);
-}
-
 // -------------------------------------------------------------------------
 // void	print_point(t_list *list)
 // {

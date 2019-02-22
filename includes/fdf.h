@@ -6,7 +6,7 @@
 /*   By: midrissi <midrissi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/13 00:03:00 by midrissi          #+#    #+#             */
-/*   Updated: 2019/02/21 11:13:04 by midrissi         ###   ########.fr       */
+/*   Updated: 2019/02/22 09:21:27 by midrissi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,29 +20,29 @@
 # define WIN_WIDTH 1920
 # define WIN_HEIGHT 1080
 
-typedef struct	s_map
+typedef struct		s_map
 {
 	int				**board;
 	int				x;
 	int				y;
 }				t_map;
 
-typedef struct	s_point
+typedef struct		s_point
 {
 	int				x;
 	int				y;
-}				t_point;
+}									t_point;
 
-typedef struct	s_image
+typedef struct		s_image
 {
 	void		*ptr;
 	char		*data;
 	int			bpp;
 	int			sizeline;
 	int			endian;
-}				t_image;
+}									t_image;
 
-typedef struct	s_fdf
+typedef struct		s_fdf
 {
 	void		*mlx_ptr;
 	void		*win_ptr;
@@ -52,10 +52,17 @@ typedef struct	s_fdf
 	int			zoom;
 	int			xoffset;
 	int			yoffset;
-}				t_fdf;
+	void			(*rasterise)(struct s_fdf *fdf, int *x, int *y, int z);
+}									t_fdf;
 
-t_map			*create_map(int fd);
-void			draw(t_fdf *fdf);
-void	create_image(t_fdf *fdf);
+t_map							*create_map(int fd);
+void							draw(t_fdf *fdf);
+void							create_image(t_fdf *fdf);
+void							rasterise_par(t_fdf *fdf, int *x, int *y, int z);
+void							rasterise_iso(t_fdf *fdf, int *x, int *y, int z);
+void							process(t_fdf *fdf);
+int								handle_key(int keycode, void *param);
+void							put_line(t_fdf *fdf, int x1, int y1, int x2,int y2);
+t_fdf							*init_fdf(int fd);
 
 #endif

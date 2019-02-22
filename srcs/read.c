@@ -6,7 +6,7 @@
 /*   By: midrissi <midrissi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/15 04:12:09 by midrissi          #+#    #+#             */
-/*   Updated: 2019/02/21 10:49:15 by midrissi         ###   ########.fr       */
+/*   Updated: 2019/02/22 09:22:39 by midrissi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,7 +121,5 @@ t_map	*create_map(int fd)
 		list = list->next;
 	}
 	ft_lstdestroy(&begin);
-	if (close (fd))
-		exit(1);
 	return (map);
 }
