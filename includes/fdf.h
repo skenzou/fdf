@@ -6,7 +6,7 @@
 /*   By: midrissi <midrissi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/13 00:03:00 by midrissi          #+#    #+#             */
-/*   Updated: 2019/02/25 01:35:47 by midrissi         ###   ########.fr       */
+/*   Updated: 2019/02/25 07:06:47 by midrissi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,13 +38,14 @@ typedef struct		s_map
 	int				**board;
 	int				x;
 	int				y;
-}				t_map;
+}					t_map;
 
 typedef struct		s_point
 {
 	int				x;
 	int				y;
-}									t_point;
+	int				color;
+}					t_point;
 
 typedef struct		s_image
 {
@@ -53,7 +54,7 @@ typedef struct		s_image
 	int			bpp;
 	int			sizeline;
 	int			endian;
-}									t_image;
+}					t_image;
 
 typedef struct		s_fdf
 {
@@ -65,8 +66,10 @@ typedef struct		s_fdf
 	int			zoom;
 	int			xoffset;
 	int			yoffset;
-	t_point			(*rasterise)(struct s_fdf *fdf, t_point point, int z);
-}									t_fdf;
+	int			color1;
+	int			color2;
+	t_point		(*rasterise)(struct s_fdf *fdf, t_point point, int z);
+}					t_fdf;
 
 t_map						*create_map(int fd);
 void						draw(t_fdf *fdf);
@@ -75,7 +78,7 @@ t_point						rasterise_par(t_fdf *fdf, t_point point, int z);
 t_point						rasterise_iso(t_fdf *fdf, t_point point, int z);
 void						process(t_fdf *fdf);
 int							handle_key(int keycode, void *param);
-void						put_line(t_fdf *fdf, t_point p1, t_point p2, int border, int color);
+void						put_line(t_fdf *fdf, t_point p1, t_point p2, int border);
 t_fdf						*init_fdf(int fd);
 void 						center(t_fdf *fdf);
 void 						scale_zoom(t_fdf *fdf);
