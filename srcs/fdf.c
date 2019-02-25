@@ -6,7 +6,7 @@
 /*   By: midrissi <midrissi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/12 23:59:47 by midrissi          #+#    #+#             */
-/*   Updated: 2019/02/22 09:25:04 by midrissi         ###   ########.fr       */
+/*   Updated: 2019/02/25 03:35:10 by midrissi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,70 +39,75 @@ int		handle_key(int keycode, void *param)
 	fdf = (t_fdf *)param;
 	if (keycode == 53)
 		exit(0);
-	fdf->xoffset = keycode == 124 ? fdf->xoffset + 30 : fdf->xoffset;
-	fdf->xoffset = keycode == 123 ? fdf->xoffset - 30 : fdf->xoffset;
-	fdf->yoffset = keycode == 125 ? fdf->yoffset + 30 : fdf->yoffset;
-	fdf->yoffset = keycode == 126 ? fdf->yoffset - 30 : fdf->yoffset;
-	fdf->zoom = keycode == 69 ? fdf->zoom + 1 : fdf->zoom;
-	fdf->zoom = keycode == 78 ? fdf->zoom - 1 : fdf->zoom;
+	fdf->xoffset = keycode == RIGHTARROW ? fdf->xoffset + 30 : fdf->xoffset;
+	fdf->xoffset = keycode == LEFTARROW ? fdf->xoffset - 30 : fdf->xoffset;
+	fdf->yoffset = keycode == DOWNARROW ? fdf->yoffset + 30 : fdf->yoffset;
+	fdf->yoffset = keycode == UPARROW ? fdf->yoffset - 30 : fdf->yoffset;
+	fdf->zoom = keycode == PLUS ? fdf->zoom + 1 : fdf->zoom;
+	fdf->zoom = keycode == MINUS ? fdf->zoom - 1 : fdf->zoom;
 	fdf->zoom = keycode == 18 ? fdf->zoom + 1 : fdf->zoom;
 	fdf->zoom = keycode == 19 ? fdf->zoom - 1 : fdf->zoom;
-	fdf->altitude = keycode == 13 ? fdf->altitude + 1 : fdf->altitude;
-	fdf->altitude = keycode == 1 ? fdf->altitude - 1 : fdf->altitude;
-	if (keycode == 12)
+	fdf->altitude = keycode == WKEY ? fdf->altitude + 1 : fdf->altitude;
+	fdf->altitude = keycode == SKEY ? fdf->altitude - 1 : fdf->altitude;
+	if (keycode == QKEY)
+	{
 		fdf->rasterise = fdf->rasterise == &rasterise_iso
 										? &rasterise_par : &rasterise_iso;
+		fdf->zoom = fdf->rasterise == &rasterise_par
+										? fdf->zoom / 2 : fdf->zoom * 2;
+		center(fdf);
+	}
 	process(fdf);
 	printf("You pressed the key number: %d\n", keycode);
 	return (1);
 }
 
-void	put_line(t_fdf *fdf, int x1, int y1, int x2,int y2)
+void	put_line(t_fdf *fdf, t_point p1, t_point p2, int border, int color)
 {
 	int		i;
-	int		dx;
-	int		dy;
+	t_point inc;
 	int		var;
 
-	x2 = x2 - x1;
-	y2 = y2 - y1;
-	dx = x2 > 0 ? 1 : -1;
-	dy = y2 > 0 ? 1 : -1;
-	x2 = ABS(x2);
-	y2 = ABS(y2);
-	if (x1 < WIN_WIDTH && x1 > 0 && y1 < WIN_HEIGHT && y1 > 0)
-	*(int *)(fdf->img->data + ((x1 + y1 * WIN_WIDTH) * fdf->img->bpp)) = mlx_get_color_value(fdf->mlx_ptr, 0xFF0000);
-	i = 1;
-	var = (x2 > y2 ? x2 : y2) / 2;
-	if (x2 > y2)
-		while (i++ <= x2 && (x1 += dx) && (var += y2))
+	p2 = (t_point){.x = p2.x - p1.x, .y = p2.y - p1.y};
+	inc = (t_point){.x = p2.x > 0 ? 1 : -1, .y = p2.y > 0 ? 1 : -1};
+	p2 = (t_point){.x = abs(p2.x), .y = abs(p2.y)};
+	if (p1.y < 0 || p2.y < 0)
+		printf("point1 |%d, %d|   |   point2 |%d, %d|\n", p1.x, p1.y, p2.x, p2.y);
+	if (border || (p1.x < DRAW_WIDTH && p1.x > 4 && p1.y < DRAW_HEIGHT && p1.y > 4))
+		*(int *)(fdf->img->data + ((p1.x + p1.y * WIN_WIDTH) *
+		fdf->img->bpp)) = mlx_get_color_value(fdf->mlx_ptr, color);
+	var = (p2.x > p2.y ? p2.x : p2.y) / 2;
+	if ((i = 1) && p2.x > p2.y)
+		while (i++ <= p2.x && (p1.x += inc.x) && (var += p2.y))
 		{
-			(var >= x2) && (y1 += dy);
-			(var >= x2) && (var -= x2);
-			if (x1 < WIN_WIDTH && x1 > 0 && y1 < WIN_HEIGHT && y1 > 0)
-			*(int *)(fdf->img->data + ((x1 + y1 * WIN_WIDTH) * fdf->img->bpp)) = mlx_get_color_value(fdf->mlx_ptr, 0xFF0000);
+			(var >= p2.x) && (p1.y += inc.y);
+			(var >= p2.x) && (var -= p2.x);
+			if (border || (p1.x < DRAW_WIDTH && p1.x > 4 && p1.y < DRAW_HEIGHT && p1.y > 4))
+				*(int *)(fdf->img->data + ((p1.x + p1.y * WIN_WIDTH) *
+				fdf->img->bpp)) = mlx_get_color_value(fdf->mlx_ptr, color);
 		}
 	else
-		while (i++ <= y2 && (y1 += dy) && (var += x2))
+		while (i++ <= p2.y && (p1.y += inc.y) && (var += p2.x))
 		{
-			(var >= y2) && (x1 += dx);
-			(var >= y2) && (var -= y2);
-			if (x1 < WIN_WIDTH && x1 > 0 && y1 < WIN_HEIGHT && y1 > 0)
-			*(int *)(fdf->img->data + ((x1 + y1 * WIN_WIDTH) * fdf->img->bpp)) = mlx_get_color_value(fdf->mlx_ptr, 0xFF0000);
+			(var >= p2.y) && (p1.x += inc.x);
+			(var >= p2.y) && (var -= p2.y);
+			if (border || (p1.x < DRAW_WIDTH && p1.x > 4 && p1.y < DRAW_HEIGHT && p1.y > 4))
+				*(int *)(fdf->img->data + ((p1.x + p1.y * WIN_WIDTH) *
+				fdf->img->bpp)) = mlx_get_color_value(fdf->mlx_ptr, color);
 		}
 }
 
 void	create_image(t_fdf *fdf)
 {
 	if (!(fdf->img = (t_image *)malloc(sizeof(t_image))))
-		exit (1);
+		exit(1);
 	fdf->img->ptr = mlx_new_image(fdf->mlx_ptr, WIN_WIDTH, WIN_HEIGHT);
 	fdf->img->data = mlx_get_data_addr(fdf->img->ptr,
 			&fdf->img->bpp, &fdf->img->sizeline, &fdf->img->endian);
 	fdf->img->bpp /= 8;
 }
 
-void	rasterise_iso(t_fdf *fdf, int *x, int *y, int z)
+t_point	rasterise_iso(t_fdf *fdf, t_point p, int z)
 {
 	double cte1;
 	double cte2;
@@ -110,83 +115,140 @@ void	rasterise_iso(t_fdf *fdf, int *x, int *y, int z)
 	cte1 = 0.5;
 	cte2 = 0.5;
 	fdf->zoom = fdf->zoom < 0 ? 0 : fdf->zoom;
-	*x = fdf->xoffset + ((*x) * fdf->zoom);
-	*y = fdf->yoffset + ((*y) * fdf->zoom);
+	p.x = fdf->xoffset + (p.x * fdf->zoom);
+	p.y = fdf->yoffset + (p.y * fdf->zoom);
 	z = z * fdf->altitude;
-	*x = fdf->xoffset + (cte1 * (*x) - cte2 * (*y));
-	*y = fdf->yoffset + (-z + (cte1 / 2.0) * (*x) + (cte2 / 2.0) * (*y));
+	p.x = fdf->xoffset + (cte1 * p.x - cte2 * p.y);
+	p.y = fdf->yoffset + (-z + (cte1 / 2.0) * p.x + (cte2 / 2.0) * p.y);
+	return (p);
 }
 
-void 	rasterise_par(t_fdf *fdf, int *x, int *y, int z)
+t_point	rasterise_par(t_fdf *fdf, t_point p, int z)
 {
 	double cte;
 
 	cte = 0.5;
 	fdf->zoom = fdf->zoom < 0 ? 0 : fdf->zoom;
-	*x = fdf->xoffset + ((*x) * fdf->zoom);
-	*y = fdf->yoffset + ((*y) * fdf->zoom);
+	p.x = fdf->xoffset + (p.x * fdf->zoom);
+	p.y = fdf->yoffset + (p.y * fdf->zoom);
 	z = z * fdf->altitude;
-	*x = *x + cte * z;
-	*y = *y + (cte / 2.0) * z;
+	p.x = p.x + cte * z;
+	p.y = p.y + (cte / 2.0) * z;
+	return (p);
+}
+
+void		put_legend(t_fdf *fdf)
+{
+	mlx_string_put(fdf->mlx_ptr, fdf->win_ptr, DRAW_WIDTH + 10, 10, ROYALBLUE,
+	"1 or +      - zoom");
+	mlx_string_put(fdf->mlx_ptr, fdf->win_ptr, DRAW_WIDTH + 10, 50, ROYALBLUE,
+	"2 or -      - unzoom");
+	mlx_string_put(fdf->mlx_ptr, fdf->win_ptr, DRAW_WIDTH + 10, 90, ROYALBLUE,
+	"W           - increase altitude");
+	mlx_string_put(fdf->mlx_ptr, fdf->win_ptr, DRAW_WIDTH + 10, 130, ROYALBLUE,
+	"S           - decrease altitude");
+	mlx_string_put(fdf->mlx_ptr, fdf->win_ptr, DRAW_WIDTH + 10, 180, ROYALBLUE,
+	"Q           - change projection");
+	mlx_string_put(fdf->mlx_ptr, fdf->win_ptr, DRAW_WIDTH + 10, 220, ROYALBLUE,
+	"left arrow  - move left");
+	mlx_string_put(fdf->mlx_ptr, fdf->win_ptr, DRAW_WIDTH + 10, 260, ROYALBLUE,
+	"right arrow - move right");
+	mlx_string_put(fdf->mlx_ptr, fdf->win_ptr, DRAW_WIDTH + 10, 300, ROYALBLUE,
+	"up arrow    - move up");
+	mlx_string_put(fdf->mlx_ptr, fdf->win_ptr, DRAW_WIDTH + 10, 340, ROYALBLUE,
+	"down arrow  - move down");
+}
+
+void		put_borders(t_fdf *fdf)
+{
+	put_line(fdf, (t_point){.x = 4, .y = 1300},
+					(t_point){.x = 2000, .y = 1300}, 1, ROYALBLUE);
+	put_line(fdf, (t_point){.x = 2000, .y = 1300},
+					(t_point){.x = 2000, .y = 4}, 1, ROYALBLUE);
+	put_line(fdf, (t_point){.x = 4, .y = 1300},
+					(t_point){.x = 4, .y = 4}, 1, ROYALBLUE);
+	put_line(fdf, (t_point){.x = 4, .y = 4},
+					(t_point){.x = 2000, .y = 4}, 1, ROYALBLUE);
 }
 
 void		draw(t_fdf *fdf)
 {
-	int i;
-	int j;
-	int x1;
-	int y1;
-	int x2;
-	int y2;
+	int		i;
+	int		j;
+	t_point p1;
+	t_point p2;
 
 	j = -1;
 	while (++j < fdf->map->y && !(i = 0))
 		while (i < fdf->map->x)
 		{
-			x1 = i;
-			y1 = j;
-			x2 = i == fdf->map->x - 1 ? i : i + 1;
-			y2 = j;
-			fdf->rasterise(fdf, &x1, &y1, fdf->map->board[y1][x1]);
-			fdf->rasterise(fdf, &x2, &y2, fdf->map->board[y2][x2]);
-			put_line(fdf, x1, y1, x2, y2);
-			x2 = i;
-			y2 = j == fdf->map->y - 1 ? j : j + 1;
-			fdf->rasterise(fdf, &x2, &y2, fdf->map->board[y2][x2]);
-			put_line(fdf, x1, y1, x2, y2);
+			p1 = (t_point){.x = i, .y = j};
+			p2 = (t_point){.x = i == fdf->map->x - 1 ? i : i + 1, .y = j};
+			p1 = fdf->rasterise(fdf, p1, fdf->map->board[p1.y][p1.x]);
+			p2 = fdf->rasterise(fdf, p2, fdf->map->board[p2.y][p2.x]);
+			put_line(fdf, p1, p2, 0, GOLD);
+			p2 = (t_point){.x = i, .y = j == fdf->map->y - 1 ? j : j + 1};
+			p2 = fdf->rasterise(fdf, p2, fdf->map->board[p2.y][p2.x]);
+			put_line(fdf, p1, p2, 0, GOLD);
 			i++;
 		}
+	put_borders(fdf);
 }
 
-int		scale_zoom(t_fdf *fdf)
+void		center(t_fdf *fdf)
+{
+	t_point p1;
+	t_point p2;
+
+	p1 = fdf->rasterise(fdf, (t_point){.x = 0, .y = 0}, fdf->map->board[0][0]);
+	p2 = fdf->rasterise(fdf, (t_point){.x = 0, .y = fdf->map->y - 1},
+										fdf->map->board[fdf->map->y - 1][0]);
+	printf("x2: %d\n", 10);
+	// ft_printf("fdf->xoffset: %d\n", fdf->xoffset);
+	// ft_printf("fdf->yoffset: %d\n", fdf->yoffset);
+}
+
+void		scale_zoom(t_fdf *fdf)
 {
 	int zoom;
 
 	zoom = 1;
 	while (fdf->map->x * zoom < WIN_WIDTH)
 		zoom++;
-	return (zoom - 1);
+	fdf->zoom = zoom - (zoom / 5);
+}
+
+int				handle_mouse(int button, int x, int y, void *param)
+{
+	t_fdf *fdf;
+
+	fdf = (t_fdf *)param;
+	(void)button;
+	printf("I clicked on point: [%d, %d]\n", x, y);
+	return (1);
 }
 
 t_fdf			*init_fdf(int fd)
 {
-		t_fdf	*fdf;
+	t_fdf	*fdf;
 
-		if (!(fdf = (t_fdf *)malloc(sizeof(t_fdf))) || fd == -1)
-			exit(1);
-		fdf->mlx_ptr = mlx_init();
-		fdf->win_ptr = mlx_new_window(fdf->mlx_ptr, WIN_WIDTH, WIN_HEIGHT, "fdf");
-		fdf->map = create_map(fd);
-		if (!fdf->mlx_ptr || !fdf->win_ptr || close(fd))
-			exit(1);
-		fdf->xoffset = 500;
-		fdf->yoffset = 100;
-		mlx_key_hook(fdf->win_ptr, &handle_key, fdf);
-		fdf->zoom = scale_zoom(fdf);
-		fdf->altitude = 1;
-		fdf->rasterise = &rasterise_iso;
-		fdf->img = NULL;
-		return (fdf);
+	if (!(fdf = (t_fdf *)malloc(sizeof(t_fdf))) || fd == -1)
+		exit(1);
+	fdf->mlx_ptr = mlx_init();
+	fdf->win_ptr = mlx_new_window(fdf->mlx_ptr, WIN_WIDTH, WIN_HEIGHT, "fdf");
+	fdf->map = create_map(fd);
+	if (!fdf->mlx_ptr || !fdf->win_ptr || close(fd))
+		exit(1);
+	fdf->xoffset = 620;
+	fdf->yoffset = 100;
+	mlx_key_hook(fdf->win_ptr, &handle_key, fdf);
+	mlx_mouse_hook(fdf->win_ptr, &handle_mouse, fdf);
+	fdf->altitude = 3;
+	fdf->rasterise = &rasterise_iso;
+	fdf->img = NULL;
+	scale_zoom(fdf);
+	center(fdf);
+	return (fdf);
 }
 
 void		process(t_fdf *fdf)
@@ -196,7 +258,10 @@ void		process(t_fdf *fdf)
 		mlx_destroy_image(fdf->mlx_ptr, fdf->img->ptr);
 	create_image(fdf);
 	draw(fdf);
-	mlx_put_image_to_window(fdf->mlx_ptr, fdf->win_ptr, fdf->img->ptr, 0 , 0);
+	ft_printf("fdf->xoffset: %d\n", fdf->xoffset);
+	ft_printf("fdf->yoffset: %d\n", fdf->yoffset);
+	mlx_put_image_to_window(fdf->mlx_ptr, fdf->win_ptr, fdf->img->ptr, 0, 0);
+	put_legend(fdf);
 }
 
 int		main(int argc, char **argv)
@@ -382,5 +447,4 @@ int		main(int argc, char **argv)
 // 		map[j++] = tab;
 // 	}
 // 	//print_map(map, x, y);
-// 	return (map);
-// }
+// 	return (mapROYALBLUE
