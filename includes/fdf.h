@@ -6,7 +6,7 @@
 /*   By: midrissi <midrissi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/13 00:03:00 by midrissi          #+#    #+#             */
-/*   Updated: 2019/02/26 12:06:44 by midrissi         ###   ########.fr       */
+/*   Updated: 2019/02/26 18:46:18 by midrissi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,11 +29,15 @@
 # define LEFTARROW 123
 # define PLUS 69
 # define MINUS 78
-# define WKEY 13
+# define AKEY 0
 # define SKEY 1
+# define DKEY 2
 # define QKEY 12
+# define WKEY 13
 # define SCROLLUP 5
 # define SCROLLDOWN 4
+# define SPACE 49
+
 
 typedef struct		s_map
 {
@@ -75,12 +79,13 @@ typedef struct		s_fdf
 }					t_fdf;
 
 t_map						*create_map(int fd);
+void						draw_circle(t_fdf *fdf, int rayon, t_point center);
 void						draw(t_fdf *fdf);
 void						create_image(t_fdf *fdf);
 t_point						rasterise_par(t_fdf *fdf, t_point point, int z);
 t_point						rasterise_iso(t_fdf *fdf, t_point point, int z);
 void						process(t_fdf *fdf);
-int							handle_key(int keycode, void *param);
+int							handle_key(int keycode, t_fdf *fdf);
 void						put_line(t_fdf *fdf, t_point p1, t_point p2);
 t_fdf						*init_fdf(int fd);
 void 						center(t_fdf *fdf);
