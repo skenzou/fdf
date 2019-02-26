@@ -6,7 +6,7 @@
 /*   By: midrissi <midrissi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/12 23:59:47 by midrissi          #+#    #+#             */
-/*   Updated: 2019/02/25 08:22:23 by midrissi         ###   ########.fr       */
+/*   Updated: 2019/02/26 14:46:44 by midrissi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ double		percent(int start, int end, int curr)
 	return (!distance ? 1.0 : (placement / distance));
 }
 
-int		get_color(t_point current, t_point start, t_point end, t_point delta)
+int		get_color(t_point current, t_point start, t_point end, t_point d)
 {
 	int		red;
 	int		green;
@@ -85,7 +85,7 @@ int		get_color(t_point current, t_point start, t_point end, t_point delta)
 
 	if (current.color == end.color)
 		return (current.color);
-	if (delta.x > delta.y)
+	if (d.x > d.y)
 		percentage = percent(start.x, end.x, current.x);
 	else
 		percentage = percent(start.y, end.y, current.y);
@@ -97,46 +97,71 @@ int		get_color(t_point current, t_point start, t_point end, t_point delta)
 	return ((red << 16) | (green << 8) | blue);
 }
 
-void	put_line(t_fdf *fdf, t_point p1, t_point p2, int border)
+int	put_pixel_img(t_fdf *fdf, t_point p, int border)
 {
-	int		i;
-	t_point inc;
-	int		var;
-	t_point s1;
-	t_point s2;
-	t_point delta;
+	int offset;
+	int color;
 
-	s1 = (t_point){.x = p1.x, .y = p1.y, .color = p1.color};
-	s2 = (t_point){.x = p2.x, .y = p2.y, .color = p2.color};
-	delta = (t_point){.x = p2.x - p1.x, .y = p2.y - p1.y};
-	p2 = (t_point){.x = p2.x - p1.x, .y = p2.y - p1.y};
-	inc = (t_point){.x = p2.x > 0 ? 1 : -1, .y = p2.y > 0 ? 1 : -1};
-	p2 = (t_point){.x = abs(p2.x), .y = abs(p2.y)};
-	delta = (t_point){.x = abs(delta.x), .y = abs(delta.y)};
-	if (border || (p1.x < DRAW_WIDTH && p1.x > 4 && p1.y < DRAW_HEIGHT && p1.y > 4))
-		*(int *)(fdf->img->data + ((p1.x + p1.y * WIN_WIDTH) *
-		fdf->img->bpp)) = mlx_get_color_value(fdf->mlx_ptr, get_color(p1, s1, s2, delta));
-	var = (p2.x > p2.y ? p2.x : p2.y) / 2;
-	if ((i = 1) && p2.x > p2.y)
-		while (i++ <= p2.x && (var += p2.y))
-		{
-			p1.x += inc.x;
-			(var >= p2.x) && (p1.y += inc.y);
-			(var >= p2.x) && (var -= p2.x);
-			if (border || (p1.x < DRAW_WIDTH && p1.x > 4 && p1.y < DRAW_HEIGHT && p1.y > 4))
-				*(int *)(fdf->img->data + ((p1.x + p1.y * WIN_WIDTH) *
-				fdf->img->bpp)) = mlx_get_color_value(fdf->mlx_ptr, get_color(p1, s1, s2, delta));
-		}
+	offset = ((p.x + p.y * WIN_WIDTH) * fdf->img->bpp);
+	color = mlx_get_color_value(fdf->mlx_ptr, p.color);
+	if (border || (p.x < DRAW_WIDTH && p.x > 4 && p.y < DRAW_HEIGHT && p.y > 4))
+		*(int *)(fdf->img->data + offset) = color;
+	return (1);
+}
+
+void	put_hor(t_fdf *fdf, t_point p1, t_point p2, t_point d)
+{
+	int i;
+	int var;
+	t_point inc;
+	t_point curr;
+
+	curr = (t_point){.x = p1.x, .y = p1.y, .color = p1.color};
+	inc = (t_point){.x = p2.x - p1.x > 0 ? 1 : -1, .y = p2.y - p1.y > 0 ? 1 : -1};
+	i = 1;
+	var = (d.x > d.y ? d.x : d.y) / 2;
+	while (i++ <= d.x && (var += d.y))
+	{
+		curr.x += inc.x;
+		(var >= d.x) && (curr.y += inc.y);
+		(var >= d.x) && (var -= d.x);
+		(curr.color = get_color(curr, p1, p2, d)) && (put_pixel_img
+																												(fdf, curr, p1.border));
+	}
+}
+
+void	put_ver(t_fdf *fdf, t_point p1, t_point p2, t_point d)
+{
+	int i;
+	int var;
+	t_point inc;
+	t_point curr;
+
+	curr = (t_point){.x = p1.x, .y = p1.y, .color = p1.color};
+	inc = (t_point){.x = p2.x - p1.x > 0 ? 1 : -1, .y = p2.y - p1.y > 0 ? 1 : -1};
+	i = 1;
+	var = (d.x > d.y ? d.x : d.y) / 2;
+	while (i++ <= d.y && (var += d.x))
+	{
+		curr.y += inc.y;
+		(var >= d.y) && (curr.x += inc.x);
+		(var >= d.y) && (var -= d.y);
+		(curr.color = get_color(curr, p1, p2, d)) && (put_pixel_img
+																												(fdf, curr, p1.border));
+	}
+}
+
+void	put_line(t_fdf *fdf, t_point p1, t_point p2)
+{
+	t_point d;
+
+	d = (t_point){.x = p2.x - p1.x, .y = p2.y - p1.y};
+	d = (t_point){.x = abs(d.x), .y = abs(d.y)};
+	(p1.color = get_color(p1, p1, p2, d)) && (put_pixel_img(fdf, p1, p1.border));
+	if (d.x > d.y)
+		put_hor(fdf, p1, p2, d);
 	else
-		while (i++ <= p2.y && (var += p2.x))
-		{
-			p1.y += inc.y;
-			(var >= p2.y) && (p1.x += inc.x);
-			(var >= p2.y) && (var -= p2.y);
-			if (border || (p1.x < DRAW_WIDTH && p1.x > 4 && p1.y < DRAW_HEIGHT && p1.y > 4))
-				*(int *)(fdf->img->data + ((p1.x + p1.y * WIN_WIDTH) *
-				fdf->img->bpp)) = mlx_get_color_value(fdf->mlx_ptr, get_color(p1, s1, s2, delta));
-		}
+		put_ver(fdf, p1, p2, d);
 }
 
 void	create_image(t_fdf *fdf)
@@ -164,8 +189,11 @@ t_point	rasterise_iso(t_fdf *fdf, t_point p, int z)
 		p.color = fdf->color2;
 	else
 		p.color = fdf->color1;
+	// p.x = fdf->xoffset + (p.x - p.y) * cos(0.523599);
+	// p.y = fdf->yoffset + (p.x + p.y) * sin(0.523599) - z;
 	p.x = fdf->xoffset + (cte1 * p.x - cte2 * p.y);
 	p.y = fdf->yoffset + (-z + (cte1 / 2.0) * p.x + (cte2 / 2.0) * p.y);
+	p.border = 0;
 	return (p);
 }
 
@@ -184,6 +212,7 @@ t_point	rasterise_par(t_fdf *fdf, t_point p, int z)
 		p.color = fdf->color1;
 	p.x = p.x + cte * z;
 	p.y = p.y + (cte / 2.0) * z;
+	p.border = 0;
 	return (p);
 }
 
@@ -211,14 +240,14 @@ void		put_legend(t_fdf *fdf)
 
 void		put_borders(t_fdf *fdf)
 {
-	put_line(fdf, (t_point){.x = 4, .y = 1300, .color = ROYALBLUE},
-					(t_point){.x = 2000, .y = 1300, .color = ROYALBLUE}, 1);
-	put_line(fdf, (t_point){.x = 2000, .y = 1300, .color = ROYALBLUE},
-					(t_point){.x = 2000, .y = 4, .color = ROYALBLUE}, 1);
-	put_line(fdf, (t_point){.x = 4, .y = 1300, .color = ROYALBLUE},
-					(t_point){.x = 4, .y = 4, .color = ROYALBLUE}, 1);
-	put_line(fdf, (t_point){.x = 4, .y = 4, .color = ROYALBLUE},
-					(t_point){.x = 2000, .y = 4, .color = ROYALBLUE}, 1);
+	put_line(fdf, (t_point){.x = 4, .y = 1300, .color = ROYALBLUE, .border = 1},
+					(t_point){.x = 2000, .y = 1300, .color = ROYALBLUE, .border = 1});
+	put_line(fdf, (t_point){.x = 2000, .y = 1300, .color = ROYALBLUE, .border = 1}
+						, (t_point){.x = 2000, .y = 4, .color = ROYALBLUE, .border = 1});
+	put_line(fdf, (t_point){.x = 4, .y = 1300, .color = ROYALBLUE, .border = 1},
+					(t_point){.x = 4, .y = 4, .color = ROYALBLUE, .border = 1});
+	put_line(fdf, (t_point){.x = 4, .y = 4, .color = ROYALBLUE, .border = 1},
+					(t_point){.x = 2000, .y = 4, .color = ROYALBLUE, .border = 1});
 }
 
 void		draw(t_fdf *fdf)
@@ -236,27 +265,71 @@ void		draw(t_fdf *fdf)
 			p2 = (t_point){.x = i == fdf->map->x - 1 ? i : i + 1, .y = j};
 			p1 = fdf->rasterise(fdf, p1, fdf->map->board[p1.y][p1.x]);
 			p2 = fdf->rasterise(fdf, p2, fdf->map->board[p2.y][p2.x]);
-			put_line(fdf, p1, p2, 0);
+			put_line(fdf, p1, p2);
 			p2 = (t_point){.x = i, .y = j == fdf->map->y - 1 ? j : j + 1};
 			p2 = fdf->rasterise(fdf, p2, fdf->map->board[p2.y][p2.x]);
-			put_line(fdf, p1, p2, 0);
+			put_line(fdf, p1, p2);
 			i++;
 		}
 	put_borders(fdf);
 }
 
+void		center_x(t_fdf *fdf)
+{
+	t_point p1;
+	t_point p2;
+
+	p1 = fdf->rasterise(fdf, (t_point){.x = fdf->map->x - 1, .y = 0},
+															fdf->map->board[0][fdf->map->x - 1]);
+	p2 = fdf->rasterise(fdf, (t_point){.x = 0, .y = fdf->map->y - 1},
+										fdf->map->board[fdf->map->y - 1][0]);
+	while (p2.x < 4 || (DRAW_WIDTH - p1.x > p2.x - 4))
+	{
+		fdf->xoffset += 10;
+		p1 = fdf->rasterise(fdf, (t_point){.x = fdf->map->x - 1, .y = 0},
+																fdf->map->board[0][fdf->map->x - 1]);
+		p2 = fdf->rasterise(fdf, (t_point){.x = 0, .y = fdf->map->y - 1},
+											fdf->map->board[fdf->map->y - 1][0]);
+	}
+	while (p1.x > DRAW_WIDTH || (DRAW_WIDTH - p1.x < p2.x - 4))
+	{
+		fdf->xoffset -= 10;
+		p1 = fdf->rasterise(fdf, (t_point){.x = fdf->map->x - 1, .y = 0},
+																fdf->map->board[0][fdf->map->x - 1]);
+		p2 = fdf->rasterise(fdf, (t_point){.x = 0, .y = fdf->map->y - 1},
+											fdf->map->board[fdf->map->y - 1][0]);
+	}
+}
+
+void		center_y(t_fdf *fdf)
+{
+	t_point p1;
+	t_point p2;
+
+	p1 = fdf->rasterise(fdf, (t_point){.x = 0, .y = 0}, fdf->map->board[0][0]);
+	p2 = fdf->rasterise(fdf, (t_point){.x = fdf->map->x - 1,
+		.y = fdf->map->y - 1}, fdf->map->board[fdf->map->y - 1][fdf->map->x - 1]);
+	while (p1.y < 4 || (DRAW_HEIGHT - p2.y > p1.y - 4))
+	{
+		fdf->yoffset += 10;
+		p1 = fdf->rasterise(fdf, (t_point){.x = 0, .y = 0}, fdf->map->board[0][0]);
+		p2 = fdf->rasterise(fdf, (t_point){.x = fdf->map->x - 1,
+			.y = fdf->map->y - 1}, fdf->map->board[fdf->map->y - 1][fdf->map->x - 1]);
+	}
+
+	while (p2.y > DRAW_HEIGHT || (DRAW_HEIGHT - p2.y < p1.y - 4))
+	{
+		fdf->yoffset -= 10;
+		p1 = fdf->rasterise(fdf, (t_point){.x = 0, .y = 0}, fdf->map->board[0][0]);
+		p2 = fdf->rasterise(fdf, (t_point){.x = fdf->map->x - 1,
+			.y = fdf->map->y - 1}, fdf->map->board[fdf->map->y - 1][fdf->map->x - 1]);
+	}
+}
+
 void		center(t_fdf *fdf)
 {
-	// t_point p1;
-	// t_point p2;
-
-	// p1 = fdf->rasterise(fdf, (t_point){.x = 0, .y = 0}, fdf->map->board[0][0]);
-	// p2 = fdf->rasterise(fdf, (t_point){.x = 0, .y = fdf->map->y - 1},
-	// 									fdf->map->board[fdf->map->y - 1][0]);
-	(void)fdf;
-
-	// ft_printf("fdf->xoffset: %d\n", fdf->xoffset);
-	// ft_printf("fdf->yoffset: %d\n", fdf->yoffset);
+	center_y(fdf);
+	center_x(fdf);
 }
 
 void		scale_zoom(t_fdf *fdf)
@@ -274,7 +347,12 @@ int				handle_mouse(int button, int x, int y, void *param)
 	t_fdf *fdf;
 
 	fdf = (t_fdf *)param;
-	(void)button;
+	if (x > 4 && x < DRAW_WIDTH && y > 4 && y < DRAW_HEIGHT)
+	{
+		fdf->zoom = button == SCROLLUP ? fdf->zoom + 1 : fdf->zoom;
+		fdf->zoom = button == SCROLLDOWN ? fdf->zoom - 1 : fdf->zoom;
+		process(fdf);
+	}
 	printf("I clicked on point: [%d, %d]\n", x, y);
 	return (1);
 }
@@ -290,15 +368,15 @@ t_fdf			*init_fdf(int fd)
 	fdf->map = create_map(fd);
 	if (!fdf->mlx_ptr || !fdf->win_ptr || close(fd))
 		exit(1);
-	fdf->xoffset = 740;
-	fdf->yoffset = 100;
+	fdf->xoffset = 450;
+	fdf->yoffset = 250;
 	mlx_key_hook(fdf->win_ptr, &handle_key, fdf);
 	mlx_mouse_hook(fdf->win_ptr, &handle_mouse, fdf);
 	fdf->altitude = 3;
 	fdf->rasterise = &rasterise_iso;
 	fdf->img = NULL;
-	fdf->color1 = GREEN4;
-	fdf->color2 = SKYBLUE;
+	fdf->color1 = WHITE;
+	fdf->color2 = PURPLE;
 	scale_zoom(fdf);
 	center(fdf);
 	return (fdf);

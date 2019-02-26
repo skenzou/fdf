@@ -6,7 +6,7 @@
 /*   By: midrissi <midrissi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/13 00:03:00 by midrissi          #+#    #+#             */
-/*   Updated: 2019/02/25 07:06:47 by midrissi         ###   ########.fr       */
+/*   Updated: 2019/02/26 12:06:44 by midrissi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,8 @@
 # define WKEY 13
 # define SKEY 1
 # define QKEY 12
+# define SCROLLUP 5
+# define SCROLLDOWN 4
 
 typedef struct		s_map
 {
@@ -45,6 +47,7 @@ typedef struct		s_point
 	int				x;
 	int				y;
 	int				color;
+	int				border;
 }					t_point;
 
 typedef struct		s_image
@@ -78,7 +81,7 @@ t_point						rasterise_par(t_fdf *fdf, t_point point, int z);
 t_point						rasterise_iso(t_fdf *fdf, t_point point, int z);
 void						process(t_fdf *fdf);
 int							handle_key(int keycode, void *param);
-void						put_line(t_fdf *fdf, t_point p1, t_point p2, int border);
+void						put_line(t_fdf *fdf, t_point p1, t_point p2);
 t_fdf						*init_fdf(int fd);
 void 						center(t_fdf *fdf);
 void 						scale_zoom(t_fdf *fdf);
