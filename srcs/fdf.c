@@ -6,7 +6,7 @@
 /*   By: midrissi <midrissi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/12 23:59:47 by midrissi          #+#    #+#             */
-/*   Updated: 2019/02/27 04:32:09 by midrissi         ###   ########.fr       */
+/*   Updated: 2019/02/27 12:23:38 by midrissi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,8 @@ static t_fdf	*init_fdf(int fd)
 {
 	t_fdf	*fdf;
 
-	if (!(fdf = (t_fdf *)malloc(sizeof(t_fdf))) || fd == -1)
-	{
-		perror("error");
+	if (!(fdf = (t_fdf *)malloc(sizeof(t_fdf))))
 		exit(1);
-	}
 	fdf->mlx_ptr = mlx_init();
 	fdf->win_ptr = mlx_new_window(fdf->mlx_ptr, WIN_WIDTH, WIN_HEIGHT, "fdf");
 	fdf->map = create_map(fd);
@@ -44,9 +41,17 @@ static t_fdf	*init_fdf(int fd)
 int				main(int argc, char **argv)
 {
 	t_fdf	*fdf;
+	int fd;
 
-	argc != 2 ? exit(1) : 0;
-	fdf = init_fdf(open(argv[1], O_RDONLY));
+	if (argc != 2)
+	{
+		ft_putendl_fd("usage: fdf input_file", 2);
+		return (0);
+	}
+	fd = open(argv[1], O_RDONLY);
+	if (fd < 0)
+		perror("error");
+	fdf = init_fdf(fd);
 	process(fdf);
 	mlx_loop(fdf->mlx_ptr);
 	return (0);
