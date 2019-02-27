@@ -1,28 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_itoa.c                                          :+:      :+:    :+:   */
+/*   ft_percent.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: midrissi <midrissi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/10/08 12:38:34 by midrissi          #+#    #+#             */
-/*   Updated: 2019/02/27 00:56:01 by midrissi         ###   ########.fr       */
+/*   Created: 2019/02/27 04:02:50 by midrissi          #+#    #+#             */
+/*   Updated: 2019/02/27 04:04:02 by midrissi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-char	*ft_itoa(intmax_t n)
+double		ft_percent(int start, int end, int curr)
 {
-	char *str;
-	char *temp;
+	double placement;
+	double distance;
 
-	str = ft_utoa_base(ft_abs(n), 10, 0);
-	if (n < 0)
-	{
-		temp = str;
-		str = ft_strjoin("-", str);
-		ft_strdel(&temp);
-	}
-	return (str);
+	placement = curr - start;
+	distance = end - start;
+	return (!distance ? 1.0 : (placement / distance));
 }

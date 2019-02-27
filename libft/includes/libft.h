@@ -6,7 +6,7 @@
 /*   By: midrissi <midrissi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/04 13:56:36 by midrissi          #+#    #+#             */
-/*   Updated: 2019/02/20 06:19:13 by midrissi         ###   ########.fr       */
+/*   Updated: 2019/02/27 04:03:43 by midrissi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,6 @@
 # define LU	5
 # define Z	6
 # define J  7
-# define ABS(x) ((x < 0) ? -x : x)
 # define BUFF_SIZE 32
 # define FD_MAX OPEN_MAX
 
@@ -139,5 +138,8 @@ intmax_t		get_signed(t_format *fmt, va_list ap);
 uintmax_t		get_unsigned(t_format *fmt, va_list ap);
 int				print_numbers(t_format *fmt, char *str, int len);
 char			*get_string(t_format *fmt, va_list ap);
+intmax_t		ft_abs(intmax_t nb);
+int				ft_get_color(int color1, int color2, double percentage);
+double			ft_percent(int start, int end, int curr);
 
 #endif

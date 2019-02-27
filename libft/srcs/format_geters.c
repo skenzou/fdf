@@ -6,7 +6,7 @@
 /*   By: midrissi <midrissi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/08 05:23:27 by midrissi          #+#    #+#             */
-/*   Updated: 2019/02/20 06:16:35 by midrissi         ###   ########.fr       */
+/*   Updated: 2019/02/27 00:55:54 by midrissi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,7 +115,7 @@ int				get_width(char *str, va_list ap, t_format *fmt)
 		}
 		(*str == '*') && (width = va_arg(ap, int));
 		(*str == '*') && (fmt->minus = width < 0 ? '-' : 0);
-		(*str == '*') && (width = ABS(width));
+		(*str == '*') && (width = ft_abs(width));
 		if (ft_isdigit(*str) && (temp = ft_atoi(str)))
 		{
 			width = temp;

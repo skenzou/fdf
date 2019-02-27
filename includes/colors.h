@@ -6,7 +6,7 @@
 /*   By: midrissi <midrissi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/25 01:10:30 by midrissi          #+#    #+#             */
-/*   Updated: 2019/02/25 01:32:15 by midrissi         ###   ########.fr       */
+/*   Updated: 2019/02/27 00:26:31 by midrissi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,9 @@
 # define MEDIUMBLUE            0xcd0000
 # define ROYAL_BLUE            0x4169e1
 # define ROYALBLUE             0x4169e1
-# define BLUE                  0xff0000
+# define BLUE                  0x0000ff
+# define GREENBLUE             0x00ff80
+# define LIGHTBLUE             0x0080ff
 # define DODGER_BLUE           0x1e90ff
 # define DODGERBLUE            0x1e90ff
 # define DEEP_SKY              0xbfff00
@@ -105,7 +107,6 @@
 # define LIGHT_STEEL           0xb0c4de
 # define LIGHTSTEELBLUE        0xb0c4de
 # define LIGHT_BLUE            0xadd8e6
-# define LIGHTBLUE             0xadd8e6
 # define POWDER_BLUE           0xb0e0e6
 # define POWDERBLUE            0xb0e0e6
 # define PALE_TURQUOISE        0xafeeee
@@ -114,7 +115,7 @@
 # define DARKTURQUOISE         0xced100
 # define MEDIUM_TURQUOISE      0x48d1cc
 # define MEDIUMTURQUOISE       0x48d1cc
-# define TURQUOISE             0x40e0d0
+# define TURQUOISE             0x00ffff
 # define CYAN                  0xffff00
 # define LIGHT_CYAN            0xe0ffff
 # define LIGHTCYAN             0xe0ffff
@@ -141,7 +142,7 @@
 # define SPRINGGREEN           0xff7f00
 # define LAWN_GREEN            0x7cfc00
 # define LAWNGREEN             0x7cfc00
-# define GREEN                 0xff0000
+# define GREEN                 0x00ff00
 # define CHARTREUSE            0x7fff00
 # define MEDIUM_SPRING         0xfa9a00
 # define MEDIUMSPRINGGREEN     0xfa9a00
@@ -190,7 +191,10 @@
 # define SALMON                0xfa8072
 # define LIGHT_SALMON          0xffa07a
 # define LIGHTSALMON           0xffa07a
-# define ORANGE                0xffa500
+# define ORANGE                0xff8000
+# define VIOLET                0x8000ff
+# define LIGHTRED              0xff0080
+# define LIGHTGREEN            0x80ff00
 # define DARK_ORANGE           0xff8c00
 # define DARKORANGE            0xff8c00
 # define CORAL                 0xff7f50
@@ -215,7 +219,6 @@
 # define VIOLET_RED            0xd02090
 # define VIOLETRED             0xd02090
 # define MAGENTA               0xff00ff
-# define VIOLET                0xee82ee
 # define PLUM                  0xdda0dd
 # define ORCHID                0xda70d6
 # define MEDIUM_ORCHID         0xba55d3
@@ -757,6 +760,5 @@
 # define DARK_RED              0x8b0000
 # define DARKRED               0x8b0000
 # define LIGHT_GREEN           0x90ee90
-# define LIGHTGREEN            0x90ee90
 
 #endif

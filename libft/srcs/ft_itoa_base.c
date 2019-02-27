@@ -6,7 +6,7 @@
 /*   By: midrissi <midrissi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/25 17:18:31 by midrissi          #+#    #+#             */
-/*   Updated: 2019/02/08 22:25:03 by midrissi         ###   ########.fr       */
+/*   Updated: 2019/02/27 00:55:05 by midrissi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ char	*ft_itoa_base(intmax_t n, int base, int uppercase)
 	char *str;
 	char *temp;
 
-	str = ft_utoa_base(ABS(n), base, uppercase);
+	str = ft_utoa_base(ft_abs(n), base, uppercase);
 	if (n < 0)
 	{
 		temp = str;

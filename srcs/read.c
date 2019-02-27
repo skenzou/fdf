@@ -6,7 +6,7 @@
 /*   By: midrissi <midrissi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/15 04:12:09 by midrissi          #+#    #+#             */
-/*   Updated: 2019/02/26 23:30:24 by midrissi         ###   ########.fr       */
+/*   Updated: 2019/02/27 04:37:07 by midrissi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,14 @@ static	int		*create_row(char *str, int fd)
 	return (row);
 }
 
-t_map	*create_map(int fd)
+static void		end(char *str, int fd)
+{
+	ft_putendl_fd(str, 2);
+	close(fd);
+	exit(1);
+}
+
+t_map			*create_map(int fd)
 {
 	t_list		*list;
 	t_list		*begin;
@@ -106,12 +113,8 @@ t_map	*create_map(int fd)
 	lines = create_list(fd, &begin);
 	map = (t_map *)malloc(sizeof(t_map));
 	map ? map->board = (int **)malloc(sizeof(int *) * lines) : 0;
-	if (!lines || !map || !(map->board) || !(list = begin))
-	{
-		ft_putendl_fd("map error", 2);
-		close(fd);
-		exit(1);
-	}
+	if (!(list = begin) || !lines || !map || !(map->board))
+		end("map error", fd);
 	map->x = ft_count_words((char *)list->content, ' ');
 	map->y = 0;
 	while (map->y < lines)

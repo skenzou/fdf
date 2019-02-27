@@ -6,7 +6,7 @@
 /*   By: midrissi <midrissi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/13 00:03:00 by midrissi          #+#    #+#             */
-/*   Updated: 2019/02/26 23:30:20 by midrissi         ###   ########.fr       */
+/*   Updated: 2019/02/27 04:32:56 by midrissi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define FDF_H
 
 # include "../libft/includes/libft.h"
+# include <stdio.h>
 # include <mlx.h>
 # include <math.h>
 # include <fcntl.h>
@@ -37,7 +38,8 @@
 # define SCROLLUP 5
 # define SCROLLDOWN 4
 # define SPACE 49
-
+# define RKEY 15
+# define PALETTERADIUS 100
 
 typedef struct		s_map
 {
@@ -76,20 +78,29 @@ typedef struct		s_fdf
 	int			color1;
 	int			color2;
 	t_list		*colors;
+	int			spectrum[12];
 	t_point		(*rasterise)(struct s_fdf *fdf, t_point point, int z);
 }					t_fdf;
 
-t_map						*create_map(int fd);
-void						draw_circle(t_fdf *fdf, int rayon, t_point center);
-void						draw(t_fdf *fdf);
-void						create_image(t_fdf *fdf);
-t_point						rasterise_par(t_fdf *fdf, t_point point, int z);
-t_point						rasterise_iso(t_fdf *fdf, t_point point, int z);
-void						process(t_fdf *fdf);
-int							handle_key(int keycode, t_fdf *fdf);
-void						put_line(t_fdf *fdf, t_point p1, t_point p2);
-t_fdf						*init_fdf(int fd);
-void 						center(t_fdf *fdf);
-void 						scale_zoom(t_fdf *fdf);
+t_point				rasterise_par(t_fdf *fdf, t_point point, int z);
+t_point				rasterise_iso(t_fdf *fdf, t_point point, int z);
+void				put_legend(t_fdf *fdf);
+void				put_borders(t_fdf *fdf);
+void				draw(t_fdf *fdf);
+
+int					handle_key(int keycode, t_fdf *fdf);
+int					handle_mouse(int button, int x, int y, t_fdf *fdf);
+void				fill_spectrum(t_fdf *fdf);
+
+int					put_pixel_img(t_fdf *fdf, t_point p, int border);
+void				process(t_fdf *fdf);
+
+t_map				*create_map(int fd);
+
+void				center(t_fdf *fdf);
+void				scale_zoom(t_fdf *fdf);
+
+void				put_line(t_fdf *fdf, t_point p1, t_point p2);
+void				draw_color_spectrum(t_fdf *fdf);
 
 #endif

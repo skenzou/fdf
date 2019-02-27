@@ -6,12 +6,13 @@
 #    By: midrissi <midrissi@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/01/29 10:58:01 by midrissi          #+#    #+#              #
-#    Updated: 2019/02/21 06:44:44 by midrissi         ###   ########.fr        #
+#    Updated: 2019/02/27 04:26:58 by midrissi         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = fdf
-SRCS = srcs/fdf.c srcs/read.c
+SRCS = srcs/fdf.c srcs/read.c srcs/image.c srcs/events.c srcs/scaling.c \
+		srcs/shapes_drawing.c srcs/draw.c
 OBJDIR = ./obj/
 OBJ = $(patsubst srcs/%.c,$(OBJDIR)%.o,$(SRCS))
 CFLAGS = -Wall -Wextra -Werror -Iincludes
