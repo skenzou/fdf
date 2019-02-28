@@ -6,7 +6,7 @@
 /*   By: midrissi <midrissi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/27 04:07:28 by midrissi          #+#    #+#             */
-/*   Updated: 2019/02/28 02:36:14 by midrissi         ###   ########.fr       */
+/*   Updated: 2019/02/28 15:13:35 by midrissi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,6 +115,5 @@ void		draw(t_fdf *fdf)
 			i++;
 		}
 	put_borders(fdf);
-	fdf->colors = NULL;
 	draw_color_spectrum(fdf);
 }

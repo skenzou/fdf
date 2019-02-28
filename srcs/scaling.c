@@ -6,7 +6,7 @@
 /*   By: midrissi <midrissi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/27 03:55:44 by midrissi          #+#    #+#             */
-/*   Updated: 2019/02/27 04:37:18 by midrissi         ###   ########.fr       */
+/*   Updated: 2019/02/28 15:16:13 by midrissi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ static void		center_x(t_fdf *fdf)
 										fdf->map->board[0][fdf->map->x - 1]);
 	p2 = fdf->rasterise(fdf, (t_point){.x = 0, .y = fdf->map->y - 1},
 										fdf->map->board[fdf->map->y - 1][0]);
-	while (p2.x < 4 || (DRAW_WIDTH - p1.x > p2.x - 4))
+	while (p2.x < 4 || (DRAW_WIDTH - p1.x > p2.x))
 	{
 		fdf->xoffset += 10;
 		p1 = fdf->rasterise(fdf, (t_point){.x = fdf->map->x - 1, .y = 0},
@@ -29,7 +29,7 @@ static void		center_x(t_fdf *fdf)
 		p2 = fdf->rasterise(fdf, (t_point){.x = 0, .y = fdf->map->y - 1},
 										fdf->map->board[fdf->map->y - 1][0]);
 	}
-	while (p1.x > DRAW_WIDTH || (DRAW_WIDTH - p1.x < p2.x - 4))
+	while (p1.x > DRAW_WIDTH || (DRAW_WIDTH - p1.x < p2.x))
 	{
 		fdf->xoffset -= 10;
 		p1 = fdf->rasterise(fdf, (t_point){.x = fdf->map->x - 1, .y = 0},
@@ -47,7 +47,7 @@ static void		center_y(t_fdf *fdf)
 	p1 = fdf->rasterise(fdf, (t_point){.x = 0, .y = 0}, fdf->map->board[0][0]);
 	p2 = fdf->rasterise(fdf, (t_point){.x = fdf->map->x - 1,
 	.y = fdf->map->y - 1}, fdf->map->board[fdf->map->y - 1][fdf->map->x - 1]);
-	while (p1.y < 4 || (DRAW_HEIGHT - p2.y > p1.y - 4))
+	while (p1.y < 4 || (DRAW_HEIGHT - p2.y > p1.y))
 	{
 		fdf->yoffset += 10;
 		p1 = fdf->rasterise(fdf, (t_point){.x = 0, .y = 0},
@@ -55,7 +55,7 @@ static void		center_y(t_fdf *fdf)
 		p2 = fdf->rasterise(fdf, (t_point){.x = fdf->map->x - 1, .y =
 		fdf->map->y - 1}, fdf->map->board[fdf->map->y - 1][fdf->map->x - 1]);
 	}
-	while (p2.y > DRAW_HEIGHT || (DRAW_HEIGHT - p2.y < p1.y - 4))
+	while (p2.y > DRAW_HEIGHT || (DRAW_HEIGHT - p2.y < p1.y))
 	{
 		fdf->yoffset -= 10;
 		p1 = fdf->rasterise(fdf, (t_point){.x = 0, .y = 0},

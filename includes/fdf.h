@@ -6,7 +6,7 @@
 /*   By: midrissi <midrissi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/13 00:03:00 by midrissi          #+#    #+#             */
-/*   Updated: 2019/02/27 04:32:56 by midrissi         ###   ########.fr       */
+/*   Updated: 2019/02/28 15:11:20 by midrissi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,7 @@ typedef struct		s_fdf
 	int			color1;
 	int			color2;
 	t_list		*colors;
+	int			colorslist;
 	int			spectrum[12];
 	t_point		(*rasterise)(struct s_fdf *fdf, t_point point, int z);
 }					t_fdf;

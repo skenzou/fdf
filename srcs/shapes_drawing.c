@@ -6,7 +6,7 @@
 /*   By: midrissi <midrissi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/27 03:52:05 by midrissi          #+#    #+#             */
-/*   Updated: 2019/02/28 03:11:32 by midrissi         ###   ########.fr       */
+/*   Updated: 2019/02/28 15:13:07 by midrissi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,9 +82,12 @@ static void		put_circle_point(t_fdf *fdf, int i, float angle, int color)
 			.color = 0, .border = 1};
 	point.color = ft_get_color(color, WHITE, 1 - i / (float)PALETTERADIUS);
 	put_pixel_img(fdf, point, 1);
-	if (!(list = ft_lstnew((void*)&point, sizeof(t_point))))
-		exit(1);
-	ft_lstadd(&fdf->colors, list);
+	if (!(fdf->colorslist))
+	{
+		if (!(list = ft_lstnew((void*)&point, sizeof(t_point))))
+			exit(1);
+		ft_lstadd(&fdf->colors, list);
+	}
 }
 
 void			draw_color_spectrum(t_fdf *fdf)
@@ -109,4 +112,5 @@ void			draw_color_spectrum(t_fdf *fdf)
 		}
 		angle += 0.005;
 	}
+	fdf->colorslist = 1;
 }

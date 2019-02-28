@@ -6,7 +6,7 @@
 /*   By: midrissi <midrissi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/12 23:59:47 by midrissi          #+#    #+#             */
-/*   Updated: 2019/02/27 20:49:06 by midrissi         ###   ########.fr       */
+/*   Updated: 2019/02/28 15:11:43 by midrissi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,8 @@ static t_fdf	*init_fdf(int fd)
 	fdf->img = NULL;
 	fdf->color1 = WHITE;
 	fdf->color2 = PURPLE;
+	fdf->colorslist = 0;
+	fdf->colors = NULL;
 	fill_spectrum(fdf);
 	scale_zoom(fdf);
 	center(fdf);
