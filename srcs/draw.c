@@ -6,7 +6,7 @@
 /*   By: midrissi <midrissi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/27 04:07:28 by midrissi          #+#    #+#             */
-/*   Updated: 2019/02/27 04:32:02 by midrissi         ###   ########.fr       */
+/*   Updated: 2019/02/28 02:36:14 by midrissi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,40 +54,43 @@ t_point		rasterise_par(t_fdf *fdf, t_point p, int z)
 
 void		put_legend(t_fdf *fdf)
 {
-	mlx_string_put(fdf->mlx_ptr, fdf->win_ptr, DRAW_WIDTH + 10, 10, ROYALBLUE,
+	mlx_string_put(fdf->mlx_ptr, fdf->win_ptr, DRAW_WIDTH + 10, 10, WHITE,
 	"1 or +                - increase altitude");
-	mlx_string_put(fdf->mlx_ptr, fdf->win_ptr, DRAW_WIDTH + 10, 50, ROYALBLUE,
+	mlx_string_put(fdf->mlx_ptr, fdf->win_ptr, DRAW_WIDTH + 10, 50, WHITE,
 	"2 or -                - decrease altitude");
-	mlx_string_put(fdf->mlx_ptr, fdf->win_ptr, DRAW_WIDTH + 10, 90, ROYALBLUE,
+	mlx_string_put(fdf->mlx_ptr, fdf->win_ptr, DRAW_WIDTH + 10, 90, WHITE,
 	"scroll up             - zoom");
-	mlx_string_put(fdf->mlx_ptr, fdf->win_ptr, DRAW_WIDTH + 10, 130, ROYALBLUE,
+	mlx_string_put(fdf->mlx_ptr, fdf->win_ptr, DRAW_WIDTH + 10, 130, WHITE,
 	"scroll down           - decrease altitude");
-	mlx_string_put(fdf->mlx_ptr, fdf->win_ptr, DRAW_WIDTH + 10, 170, ROYALBLUE,
+	mlx_string_put(fdf->mlx_ptr, fdf->win_ptr, DRAW_WIDTH + 10, 170, WHITE,
 	"Q  or space           - change projection");
-	mlx_string_put(fdf->mlx_ptr, fdf->win_ptr, DRAW_WIDTH + 10, 210, ROYALBLUE,
+	mlx_string_put(fdf->mlx_ptr, fdf->win_ptr, DRAW_WIDTH + 10, 210, WHITE,
 	"left arrow or A       - move left");
-	mlx_string_put(fdf->mlx_ptr, fdf->win_ptr, DRAW_WIDTH + 10, 250, ROYALBLUE,
+	mlx_string_put(fdf->mlx_ptr, fdf->win_ptr, DRAW_WIDTH + 10, 250, WHITE,
 	"right arrow or D      - move right");
-	mlx_string_put(fdf->mlx_ptr, fdf->win_ptr, DRAW_WIDTH + 10, 290, ROYALBLUE,
+	mlx_string_put(fdf->mlx_ptr, fdf->win_ptr, DRAW_WIDTH + 10, 290, WHITE,
 	"up arrow or W         - move up");
-	mlx_string_put(fdf->mlx_ptr, fdf->win_ptr, DRAW_WIDTH + 10, 330, ROYALBLUE,
+	mlx_string_put(fdf->mlx_ptr, fdf->win_ptr, DRAW_WIDTH + 10, 330, WHITE,
 	"down arrow or S       - move down");
-	mlx_string_put(fdf->mlx_ptr, fdf->win_ptr, DRAW_WIDTH + 10, 370, ROYALBLUE,
+	mlx_string_put(fdf->mlx_ptr, fdf->win_ptr, DRAW_WIDTH + 10, 370, WHITE,
 	"left click on color   - low altitude color");
-	mlx_string_put(fdf->mlx_ptr, fdf->win_ptr, DRAW_WIDTH + 10, 410, ROYALBLUE,
+	mlx_string_put(fdf->mlx_ptr, fdf->win_ptr, DRAW_WIDTH + 10, 410, WHITE,
 	"right click on color  - high altitude color");
 }
 
 void		put_borders(t_fdf *fdf)
 {
-	put_line(fdf, (t_point){.x = 4, .y = 1300, .color = ROYALBLUE, .border = 1},
-			(t_point){.x = 2000, .y = 1300, .color = ROYALBLUE, .border = 1});
-	put_line(fdf, (t_point){.x = 2000, .y = 1300, .color = ROYALBLUE, .border
-	= 1}, (t_point){.x = 2000, .y = 4, .color = ROYALBLUE, .border = 1});
-	put_line(fdf, (t_point){.x = 4, .y = 1300, .color = ROYALBLUE, .border = 1},
-					(t_point){.x = 4, .y = 4, .color = ROYALBLUE, .border = 1});
-	put_line(fdf, (t_point){.x = 4, .y = 4, .color = ROYALBLUE, .border = 1},
-				(t_point){.x = 2000, .y = 4, .color = ROYALBLUE, .border = 1});
+	int i;
+
+	i = DRAW_HEIGHT - 1;
+	while (++i < WIN_HEIGHT)
+		put_line(fdf, (t_point){.x = 0, .y = i, .color = CHERRY, .border = 1},
+				(t_point){.x = 2000, .y = i, .color = CHERRY, .border = 1});
+	i = DRAW_WIDTH - 1;
+	while (++i < WIN_WIDTH)
+		put_line(fdf, (t_point){.x = i, .y = WIN_HEIGHT - 1, .color = CHERRY,
+			.border= 1}, (t_point){.x = i, .y = 0, .color = CHERRY,
+																.border = 1});
 }
 
 void		draw(t_fdf *fdf)

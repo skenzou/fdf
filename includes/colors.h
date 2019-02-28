@@ -6,13 +6,14 @@
 /*   By: midrissi <midrissi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/25 01:10:30 by midrissi          #+#    #+#             */
-/*   Updated: 2019/02/27 00:26:31 by midrissi         ###   ########.fr       */
+/*   Updated: 2019/02/28 02:35:55 by midrissi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef COLORS_H
 # define COLORS_H
 
+# define CHERRY                0x551313
 # define SNOW                  0xfffafa
 # define GHOST_WHITE           0xf8f8ff
 # define GHOSTWHITE            0xf8f8ff

@@ -6,7 +6,7 @@
 /*   By: midrissi <midrissi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/12 23:59:47 by midrissi          #+#    #+#             */
-/*   Updated: 2019/02/27 12:23:38 by midrissi         ###   ########.fr       */
+/*   Updated: 2019/02/27 20:49:06 by midrissi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ static t_fdf	*init_fdf(int fd)
 int				main(int argc, char **argv)
 {
 	t_fdf	*fdf;
-	int fd;
+	int		fd;
 
 	if (argc != 2)
 	{

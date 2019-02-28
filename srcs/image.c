@@ -6,7 +6,7 @@
 /*   By: midrissi <midrissi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/27 03:50:36 by midrissi          #+#    #+#             */
-/*   Updated: 2019/02/27 04:32:12 by midrissi         ###   ########.fr       */
+/*   Updated: 2019/02/28 02:16:58 by midrissi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ int				put_pixel_img(t_fdf *fdf, t_point p, int border)
 
 	offset = ((p.x + p.y * WIN_WIDTH) * fdf->img->bpp);
 	color = mlx_get_color_value(fdf->mlx_ptr, p.color);
-	if (border || (p.x < DRAW_WIDTH && p.x > 4 && p.y < DRAW_HEIGHT && p.y > 4))
+	if (border || (p.x < DRAW_WIDTH && p.x > 0 && p.y < DRAW_HEIGHT && p.y > 0))
 		*(int *)(fdf->img->data + offset) = color;
 	return (1);
 }
