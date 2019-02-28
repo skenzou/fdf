@@ -6,7 +6,7 @@
 /*   By: midrissi <midrissi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/27 03:52:05 by midrissi          #+#    #+#             */
-/*   Updated: 2019/02/28 02:33:41 by midrissi         ###   ########.fr       */
+/*   Updated: 2019/02/28 03:11:32 by midrissi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ static void		put_circle_point(t_fdf *fdf, int i, float angle, int color)
 	t_point	c;
 	t_list	*list;
 
-	c = (t_point){.x = 2230, .y = 700};
+	c = (t_point){.x = 2300, .y = 700};
 	point = (t_point){.x = c.x + i * cos(angle), .y = c.y + i * sin(angle),
 			.color = 0, .border = 1};
 	point.color = ft_get_color(color, WHITE, 1 - i / (float)PALETTERADIUS);
