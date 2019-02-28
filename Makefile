@@ -37,7 +37,6 @@ $(OBJDIR): $(SRCS)
 
 
 clean:
-	@rm -f $(OBJ)
 	@rm -rf $(OBJDIR)
 	@make clean -C $(MLX_PATH)
 	@make fclean -C $(LPATH)
